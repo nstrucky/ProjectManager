@@ -13,3 +13,4 @@
 .externalNativeBuild
 /gradle.properties
 /keystore.properties
+/commits.txt

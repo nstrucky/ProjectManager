@@ -27,6 +27,7 @@ android {
              */
             buildConfigField("String", "TEST_API_SECRET", TEST_API_SECRET)
             buildConfigField("String", "TEST_SERVER_IP_ADDRESS", TEST_SERVER_IP_ADDRESS)
+            buildConfigField("String", "TEST_CLIENT_ID", TEST_CLIENT_ID)
         }
     }
 }
