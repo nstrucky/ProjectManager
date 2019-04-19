@@ -10,6 +10,8 @@ import com.android.volley.Response
 import com.android.volley.toolbox.*
 import com.ventoray.projectmanager.BuildConfig
 import com.ventoray.projectmanager.R
+import com.ventoray.projectmanager.util.PreferenceUtilK
+import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.web.VolleySingleton
 
 import kotlinx.android.synthetic.main.activity_sign_in.*
@@ -29,7 +31,6 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN;
     }
 
-
     override fun onClick(view: View?) {
         when(view?.id) {
             signInButton.id -> signIn()
@@ -40,67 +41,50 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
     private fun register() : Unit {
         var intent: Intent = Intent();
         intent.setClass(this, RegisterActivity::class.java )
-        testExtras(intent)
         startActivity(intent)
     }
-
-
 
     private fun signIn(): Unit {
         val username: String = inputUsername.text.toString()
         val password: String = inputPassword.text.toString()
-        val client_id: String = BuildConfig.TEST_CLIENT_ID
-        val client_secret: String = BuildConfig.TEST_API_SECRET
-
+        val clientId: String = BuildConfig.TEST_CLIENT_ID
+        val clientSecret: String = BuildConfig.TEST_API_SECRET
         val volley: VolleySingleton = VolleySingleton.getInstance(applicationContext)
-
         val requestJson: JSONObject = JSONObject().apply {
-            put("username", username)
-            put("password", password)
-            put("client_id", client_id)
-            put("client_secret", client_secret)
-            put("grant_type", "password")
+            put(APIv1.PARAM_USERNAME, username)
+            put(APIv1.PARAM_PASSWORD, password)
+            put(APIv1.PARAM_CLIENT_ID, clientId)
+            put(APIv1.PARAM_CLIENT_SECRET, clientSecret)
+            put(APIv1.PARAM_GRANT_TYPE, APIv1.VALUE_GRANT_TYPE)
         }
-
 
         val requestBody: String = requestJson.toString()
 
-
         val stringRequest: StringRequest = object : StringRequest(
             Request.Method.POST,
-            "http://" + BuildConfig.TEST_SERVER_IP_ADDRESS + "/oauth/token",
+            APIv1.URL_TOKEN_REQUEST,
             Response.Listener<String> { response ->
                 Log.d("SignInActivity", response)
+                val jsonObject: JSONObject = JSONObject(response)
+                val token: String = jsonObject.optString(APIv1.RESPONSE_KEY_ACCESS_TOKEN)
+                PreferenceUtilK.putClientPasswordToken(applicationContext, token)
+                Log.d("TOKEN", token)
+                //TODO Error Checking for Token first
+                val signInIntent: Intent = Intent()
+                signInIntent.setClass(this, PreSignInActivity::class.java)
+                startActivity(signInIntent)
+
             },
             Response.ErrorListener {  }
         ) {
             override fun getBodyContentType(): String {
-                return "application/json; charset=utf-8"
+                return APIv1.CONTENT_TYPE_BODY
             }
 
             override fun getBody(): ByteArray {
                 return requestBody.toByteArray(Charset.forName("utf-8"))
             }
         }
-
-
         volley.addToRequestQueue(stringRequest)
     }
-
-
-
-
-
-    //TODO remove this
-    private fun testExtras(intent: Intent) {
-        intent.putExtra("Test 1", "test 1 extra").putExtra("Test 4", "test 4 extra")
-        // fun <T> T.apply(f: T() -> Unit): T {f() return this;}
-        intent.apply {
-            putExtra("Test 2", "test 2 extra")
-            putExtra("Test 3", "test 3 extra")
-        }
-    }
-
-
-
 }

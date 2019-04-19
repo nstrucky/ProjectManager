@@ -2,6 +2,7 @@ package com.ventoray.projectmanager.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 
 object PreferenceUtilK {
 
@@ -16,24 +17,22 @@ object PreferenceUtilK {
 
     }
 
-    object ClientPasswordTokenPreferences {
-        val KEY_CLIENT_PASSWORD_TOKEN = "client_password_token"
 
-        fun putClientPasswordToken(context: Context, token: String) {
-            //TODO encrypt token
-            getSharedPreferences(context).edit().putString(KEY_CLIENT_PASSWORD_TOKEN, token).apply()
-        }
+    val KEY_CLIENT_PASSWORD_TOKEN = "client_password_token"
 
-        fun getClientPasswordToken(context: Context): String? {
-            //TODO decrypt token
-            return getSharedPreferences(context).getString(KEY_CLIENT_PASSWORD_TOKEN, null)
-        }
+    fun putClientPasswordToken(context: Context, token: String) {
+        Log.i("Token", "Saving to preferences: $token")
+        //TODO encrypt token
+        getSharedPreferences(context).edit().putString(KEY_CLIENT_PASSWORD_TOKEN, token).apply()
+    }
 
-        fun removeTokenPreferences(context: Context) {
-            getSharedPreferences(context).edit().putString(KEY_CLIENT_PASSWORD_TOKEN, null).apply()
-        }
+    fun getClientPasswordToken(context: Context): String? {
+        //TODO decrypt token
+        return getSharedPreferences(context).getString(KEY_CLIENT_PASSWORD_TOKEN, null)
+    }
 
-
+    fun removeTokenPreferences(context: Context) {
+        getSharedPreferences(context).edit().putString(KEY_CLIENT_PASSWORD_TOKEN, null).apply()
     }
 
 }
