@@ -10,6 +10,8 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.ventoray.projectmanager.BuildConfig
 import com.ventoray.projectmanager.R
+import com.ventoray.projectmanager.util.MessageUtil
+import com.ventoray.projectmanager.util.MessageUtil.makeToast
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.web.VolleySingleton
@@ -48,9 +50,23 @@ class PreSignInActivity : AppCompatActivity() {
             Request.Method.GET, APIv1.URL_TEST,
             Response.Listener<String> { response ->
                 response?.let { Log.i("SignInActivity", response) }
-                val intent: Intent = Intent()
-                intent.setClass(this, MainActivity::class.java)
-                startActivity(intent)
+
+                //Determine if it's the first signin
+                if (PreferenceUtilK.getFirstTimeAppOpened(this)) {
+                    makeToast(this, "First Time Signing In!")
+
+                    PreferenceUtilK.setAppOpened(this)
+                    //TODO make this a walkthrough or something
+                    val intent: Intent = Intent()
+                    intent.setClass(this, MainActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    val intent: Intent = Intent()
+                    intent.setClass(this, MainActivity::class.java)
+                    startActivity(intent)
+                }
+
+
             },
             Response.ErrorListener {
                 Toast.makeText(this, R.string.no_one_signed_in, Toast.LENGTH_SHORT).show()

@@ -6,7 +6,7 @@ import android.util.Log
 
 object PreferenceUtilK {
 
-    private val PREFERENCES_FILE = "com.ventoray.projectmanager_preferences"
+    private const val PREFERENCES_FILE = "com.ventoray.projectmanager_preferences"
 
     fun getSharedPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREFERENCES_FILE, 0)
@@ -18,7 +18,7 @@ object PreferenceUtilK {
     }
 
 
-    val KEY_CLIENT_PASSWORD_TOKEN = "client_password_token"
+    private const val KEY_CLIENT_PASSWORD_TOKEN = "client_password_token"
 
     fun putClientPasswordToken(context: Context, token: String) {
         Log.i("Token", "Saving to preferences: $token")
@@ -34,5 +34,23 @@ object PreferenceUtilK {
     fun removeTokenPreferences(context: Context) {
         getSharedPreferences(context).edit().putString(KEY_CLIENT_PASSWORD_TOKEN, null).apply()
     }
+
+
+    private const val KEY_FIRST_INSTALL = "first_install_pref"
+
+    fun setFirstTimeOpened(context: Context) {
+        Log.i("FirstInstall", "Saving to preferences: true")
+        getSharedPreferences(context).edit().putBoolean(KEY_FIRST_INSTALL, true).apply()
+    }
+
+    fun setAppOpened(context: Context) {
+        Log.i("FirstInstall", "Saving to preferences: false")
+        getSharedPreferences(context).edit().putBoolean(KEY_FIRST_INSTALL, false).apply()
+    }
+
+    fun getFirstTimeAppOpened(context: Context): Boolean {
+        return getSharedPreferences(context).getBoolean(KEY_FIRST_INSTALL, true)
+    }
+
 
 }

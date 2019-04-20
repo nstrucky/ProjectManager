@@ -8,12 +8,16 @@ class APIv1 {
 
     companion object Constants {
 
+        const val PROTOCOL = "http://"
+        const val API_V1 = "/api/v1"
+
         /**
          * URLs
          */
-        const val URL_TEST = "http://" + BuildConfig.TEST_SERVER_IP_ADDRESS + "/api/v1/test"
-        const val URL_TOKEN_REQUEST = "http://" + BuildConfig.TEST_SERVER_IP_ADDRESS + "/oauth/token"
-        const val URL_LOGOUT = "http://" + BuildConfig.TEST_SERVER_IP_ADDRESS + "/api/v1/logout"
+        const val URL_TEST = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/test"
+        const val URL_TOKEN_REQUEST = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + "/oauth/token"
+        const val URL_LOGOUT = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/logout"
+        const val URL_USER = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/user"
 
         /**
          * Header Fields
