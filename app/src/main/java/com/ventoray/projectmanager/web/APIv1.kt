@@ -12,12 +12,13 @@ class APIv1 {
         const val API_V1 = "/api/v1"
 
         /**
-         * URLs
+         * URL Endpoints
          */
         const val URL_TEST = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/test"
         const val URL_TOKEN_REQUEST = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + "/oauth/token"
         const val URL_LOGOUT = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/logout"
         const val URL_USER = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/user"
+        const val URL_USERS = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/users"
 
         /**
          * Header Fields

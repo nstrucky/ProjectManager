@@ -124,14 +124,12 @@ object FileManager {
     }
 
     fun writeObjectToFile(context: Context, o: Any?, fileName: String) {
-
         val outputStream: FileOutputStream
         val objectOutputStream: ObjectOutputStream
 
         if (o == null) return
 
         try {
-
             outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
             objectOutputStream = ObjectOutputStream(outputStream)
             objectOutputStream.writeObject(o)

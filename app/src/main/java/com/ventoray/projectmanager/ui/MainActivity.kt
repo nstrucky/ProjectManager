@@ -17,15 +17,19 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
+import com.ventoray.projectmanager.BaseActivity
 import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.util.FileManager
 import com.ventoray.projectmanager.util.Files.USER_OBJECT_FILE
+import com.ventoray.projectmanager.util.MessageUtil
+import com.ventoray.projectmanager.util.NetworkChangeListener
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.web.User
 import com.ventoray.projectmanager.web.VolleySingleton
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener
+     {
 
     //TODO replace this
     private var user: User? = User()
@@ -209,4 +213,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
+    override fun onNetworkStateChange(connected: Boolean) {
+        if (!connected) {
+            MessageUtil.makeToast(this, "Lost Connection")
+        } else {
+            MessageUtil.makeToast(this, "Connectivity Restored")
+
+        }
+    }
 }

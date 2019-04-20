@@ -45,14 +45,17 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun signIn(): Unit {
+        //TODO use these variables
         val username: String = inputUsername.text.toString()
         val password: String = inputPassword.text.toString()
         val clientId: String = BuildConfig.TEST_CLIENT_ID
         val clientSecret: String = BuildConfig.TEST_API_SECRET
         val volley: VolleySingleton = VolleySingleton.getInstance(applicationContext)
         val requestJson: JSONObject = JSONObject().apply {
-            put(APIv1.PARAM_USERNAME, username)
-            put(APIv1.PARAM_PASSWORD, password)
+
+
+            put(APIv1.PARAM_USERNAME, "alexi.laiho@gmail.com")
+            put(APIv1.PARAM_PASSWORD, "loomis123")
             put(APIv1.PARAM_CLIENT_ID, clientId)
             put(APIv1.PARAM_CLIENT_SECRET, clientSecret)
             put(APIv1.PARAM_GRANT_TYPE, APIv1.VALUE_GRANT_TYPE)
