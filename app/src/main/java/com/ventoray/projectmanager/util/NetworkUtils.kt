@@ -5,10 +5,6 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 
-interface NetworkChangeListener {
-    abstract fun onNetworkStateChange(connected: Boolean)
-}
-
 class NetworkUtils {
 
     fun deviceIsConnected(context: Context?) : Boolean {

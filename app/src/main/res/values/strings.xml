@@ -8,6 +8,10 @@
     <string name="register">Register</string>
     <string name="confirm_password">Confirm Password</string>
 
+    <!--Tab Names-->
+    <string name="active">Active</string>
+    <string name="complete">Complete</string>
+
     <!--Toast strings -->
     <string name="no_one_signed_in">No one is signed in!</string>
     <string name="logout_failed">Logout failed!</string>

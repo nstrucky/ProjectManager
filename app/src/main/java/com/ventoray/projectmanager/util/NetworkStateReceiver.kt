@@ -21,3 +21,7 @@ class NetworkStateReceiver : BroadcastReceiver() {
         }
     }
 }
+
+interface NetworkChangeListener {
+    abstract fun onNetworkStateChange(connected: Boolean)
+}

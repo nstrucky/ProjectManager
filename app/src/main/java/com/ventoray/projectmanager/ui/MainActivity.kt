@@ -7,7 +7,8 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.view.MenuItem
 import android.support.v4.widget.DrawerLayout
 import android.support.design.widget.NavigationView
-import android.support.v7.app.AppCompatActivity
+import android.support.design.widget.TabLayout
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
@@ -22,8 +23,8 @@ import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.util.FileManager
 import com.ventoray.projectmanager.util.Files.USER_OBJECT_FILE
 import com.ventoray.projectmanager.util.MessageUtil
-import com.ventoray.projectmanager.util.NetworkChangeListener
 import com.ventoray.projectmanager.util.PreferenceUtilK
+import com.ventoray.projectmanager.ui.adapter.ProjectsPageAdapter
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.web.User
 import com.ventoray.projectmanager.web.VolleySingleton
@@ -34,8 +35,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //TODO replace this
     private var user: User? = User()
 
-    private var emailTextView: TextView? = null
-    private var userNameTextView: TextView? = null
+
+     private var emailTextView: TextView? = null
+     private var userNameTextView: TextView? = null
+
+     private var projectsViewPager: ViewPager? = null
+     private var projectsTabLayout: TabLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,8 +61,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         emailTextView = navView.getHeaderView(0).findViewById(R.id.emailTextView)
         userNameTextView = navView.getHeaderView(0).findViewById(R.id.userNameTextView)
         getUserData()
-
+        setUpTabLayout()
     }
+
+     private fun setUpTabLayout() : Unit {
+         projectsTabLayout = findViewById<TabLayout>(R.id.projectsTabLayout)
+         projectsViewPager = findViewById<ViewPager>(R.id.projectsViewPager)
+         projectsTabLayout?.setupWithViewPager(projectsViewPager)
+         projectsTabLayout?.tabMode = TabLayout.MODE_FIXED
+         projectsViewPager?.adapter = ProjectsPageAdapter(supportFragmentManager, this)
+
+         //TODO viewPager.setPageTransformer
+
+     }
 
 
     /**
