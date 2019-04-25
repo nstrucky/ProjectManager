@@ -29,18 +29,17 @@ import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.web.User
 import com.ventoray.projectmanager.web.VolleySingleton
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener
-     {
+class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     //TODO replace this
     private var user: User? = User()
 
 
-     private var emailTextView: TextView? = null
-     private var userNameTextView: TextView? = null
+    private lateinit var emailTextView: TextView
+    private lateinit var userNameTextView: TextView
 
-     private var projectsViewPager: ViewPager? = null
-     private var projectsTabLayout: TabLayout? = null
+    private lateinit var projectsViewPager: ViewPager
+    private lateinit var projectsTabLayout: TabLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,16 +63,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setUpTabLayout()
     }
 
-     private fun setUpTabLayout() : Unit {
-         projectsTabLayout = findViewById<TabLayout>(R.id.projectsTabLayout)
-         projectsViewPager = findViewById<ViewPager>(R.id.projectsViewPager)
-         projectsTabLayout?.setupWithViewPager(projectsViewPager)
-         projectsTabLayout?.tabMode = TabLayout.MODE_FIXED
-         projectsViewPager?.adapter = ProjectsPageAdapter(supportFragmentManager, this)
+    private fun setUpTabLayout(): Unit {
+        projectsTabLayout = findViewById<TabLayout>(R.id.projectsTabLayout)
+        projectsViewPager = findViewById<ViewPager>(R.id.projectsViewPager)
+        projectsTabLayout.setupWithViewPager(projectsViewPager)
+        projectsTabLayout.tabMode = TabLayout.MODE_FIXED
+        projectsViewPager.adapter = ProjectsPageAdapter(supportFragmentManager, this)
 
-         //TODO viewPager.setPageTransformer
+        //TODO viewPager.setPageTransformer
 
-     }
+    }
 
 
     /**
@@ -175,19 +174,18 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 startActivity(intent)
             },
             Response.ErrorListener {
-                it?.let { Log.e("Logout", it.message ?: "null message")  }
+                it?.let { Log.e("Logout", it.message ?: "null message") }
                 Toast.makeText(this, R.string.logout_failed, Toast.LENGTH_SHORT).show()
             }
         ) {
             override fun getHeaders(): MutableMap<String, String> {
-                return HashMap<String, String>().apply {  put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
+                return HashMap<String, String>().apply { put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
             }
         }
         VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
     }
 
-    private fun getUserFromWeb() : Unit {
-        //TODO remove user info e.g. database
+    private fun getUserFromWeb(): Unit {
         val token: String? = PreferenceUtilK.getClientPasswordToken(applicationContext)
         if (token == null || token.isEmpty()) {
             val intent: Intent = Intent()
@@ -204,17 +202,16 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     FileManager.writeObjectToFile(this, user, USER_OBJECT_FILE)
 
                     //TODO control flow for error
-                    //TODO set user data on Nav Header
                     setNavHeaderData()
                 }
             },
             Response.ErrorListener {
-                it?.let { Log.e("RetreiveUser", it.message ?: "null message")  }
+                it?.let { Log.e("RetreiveUser", it.message ?: "null message") }
                 Toast.makeText(this, R.string.retrieve_user_failed, Toast.LENGTH_SHORT).show()
             }
         ) {
             override fun getHeaders(): MutableMap<String, String> {
-                return HashMap<String, String>().apply {  put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
+                return HashMap<String, String>().apply { put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
             }
         }
         VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
@@ -229,6 +226,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
 
+    /**
+     *@param connected - true if network state changed
+     */
     override fun onNetworkStateChange(connected: Boolean) {
         if (!connected) {
             MessageUtil.makeToast(this, "Lost Connection")
@@ -236,5 +236,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             MessageUtil.makeToast(this, "Connectivity Restored")
 
         }
+    }
+
+
+    fun testFragmentText(string: String?) : String {
+        return "Test String ${string}"
     }
 }
