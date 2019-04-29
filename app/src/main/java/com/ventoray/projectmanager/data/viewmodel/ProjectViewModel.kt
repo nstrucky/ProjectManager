@@ -3,11 +3,12 @@ package com.ventoray.projectmanager.data.viewmodel
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.ViewModel
 import com.ventoray.projectmanager.data.ProjectManagerDB
 import com.ventoray.projectmanager.data.dao.ProjectDao
 import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.data.repo.ProjectRepository
+import com.ventoray.projectmanager.util.PreferenceUtilK
+import com.ventoray.projectmanager.web.VolleySingleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,19 +17,25 @@ import kotlin.coroutines.CoroutineContext
 
 class ProjectViewModel(application: Application) : AndroidViewModel(application) {
 
-    val allProjects: LiveData<List<Project>>
-
     private val repository: ProjectRepository
+
+    //Coroutine Scope var/vals
     private var parentJob = Job()
-    private val coroutineContext: CoroutineContext
-        get() = parentJob + Dispatchers.Main
+    private val coroutineContext: CoroutineContext get() = parentJob + Dispatchers.Main
     private val scope = CoroutineScope(coroutineContext)
 
     init {
-        val projectDao: ProjectDao = ProjectManagerDB.getDatabase(application).projectDao()
-        repository = ProjectRepository(projectDao)
-        allProjects = repository.projects
+        repository = ProjectRepository(application)
+    }
 
+    /**
+     * @param userId - the user Id for user logged into apop
+     * TODO eventually the api should be updated so the password grant token determines user id when sent to server
+     * This is not a great design, if the api were ever opened to a public audience, then they could use any user's
+     * ID to retrieve project data
+     */
+    fun allProjects(userId: Int): LiveData<List<Project>> {
+        return repository.getAllProjects(userId)
     }
 
     /**
@@ -36,7 +43,7 @@ class ProjectViewModel(application: Application) : AndroidViewModel(application)
      * New coroutine based on scope defined...DB operations so Dispatchers.IO
      */
     fun insert(project: Project) = scope.launch(Dispatchers.IO){
-        repository.insert(project)
+        repository.insert(project) //suspended function in repository
     }
 
     /**

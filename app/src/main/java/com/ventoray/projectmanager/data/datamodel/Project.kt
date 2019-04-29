@@ -2,6 +2,7 @@ package com.ventoray.projectmanager.data.datamodel
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import org.jetbrains.annotations.Nullable
 
 @Entity(tableName = "projects")
 data class Project(
@@ -11,9 +12,9 @@ data class Project(
     var account_number: String = "",
     var description: String = "",
     var status: String = "",
-    var due_date: Long = 0,
-    var created_at: Long = 0,
-    var updated_at: Long = 0
+    var due_date: String = "",
+    var created_at: String = "",
+    var updated_at: String = ""
 ) {
 
 }

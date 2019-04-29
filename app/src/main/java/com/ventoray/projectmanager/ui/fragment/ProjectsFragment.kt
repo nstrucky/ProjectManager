@@ -4,6 +4,8 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
+import android.renderscript.RSInvalidStateException
+import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
@@ -28,23 +30,22 @@ private const val TEST_TEXT = "param1"
  */
 class ProjectsFragment : Fragment() {
 
-
     private lateinit var projectViewModel: ProjectViewModel
     private lateinit var adapter: ProjectListAdapter
+    private lateinit var fab: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-
+            //Use arguments to determine fragment functionality
         }
+    }
 
-        projectViewModel = activity?.run {
-            ViewModelProviders.of(this).get(ProjectViewModel::class.java)
-        } ?: throw Exception("Invalid Activity")
+    var number: Int = 7
 
-        projectViewModel.allProjects.observe(this, Observer { projects ->
-            projects?.let { adapter.setProjects(it) }
-        })
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
     }
 
@@ -55,20 +56,35 @@ class ProjectsFragment : Fragment() {
         val view: View = inflater.inflate(R.layout.fragment_projects, container, false)
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
+
+        fab = view.findViewById(R.id.fab)
         adapter = ProjectListAdapter(context)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-//        projectViewModel.insert(Project(Math.random().toInt(), "Test Name"))
+
+        projectViewModel = activity?.run {
+            ViewModelProviders.of(this).get(ProjectViewModel::class.java)
+        } ?: throw Exception("Invalid Activity")
+
+        //TODO retrieve currently logged in user and pass in ID
+        projectViewModel.allProjects(1).observe(this, Observer { projects ->
+            projects?.let {
+                //TODO Based on Fragment type filter projects and pass into adapter
+                adapter.setProjects(projects)
+            }
+        })
+
+//        fab.setOnClickListener { view ->
+//            number++
+//            projectViewModel.insert(Project(number, "NAme", "Account", "number", "description", "status", "date", "date", "date"))
+//        }
 
         return view
     }
 
     override fun onAttach(context: Context) {
-
         super.onAttach(context)
-
-
 
     }
 

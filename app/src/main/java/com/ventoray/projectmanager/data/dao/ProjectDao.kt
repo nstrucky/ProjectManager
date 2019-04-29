@@ -1,19 +1,21 @@
 package com.ventoray.projectmanager.data.dao
 
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Dao
-import android.arch.persistence.room.Delete
-import android.arch.persistence.room.Insert
-import android.arch.persistence.room.Query
+import android.arch.lifecycle.MutableLiveData
+import android.arch.persistence.room.*
 import com.ventoray.projectmanager.data.datamodel.Project
 
 @Dao
 interface ProjectDao {
-    @Query("SELECT * FROM projects ORDER BY due_date ASC")
+    @Query("SELECT * FROM projects")
     fun getAllProjects(): LiveData<List<Project>>
 
-    @Insert
-    fun insert(project: Project)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(project: Project): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(vararg projects: Project): List<Long>
+
 
 //    @Query("DELETE FROM projects WHERE id = (:id)")
 //    fun deleteProject(id: Int)
@@ -23,6 +25,5 @@ interface ProjectDao {
 
     @Query("DELETE FROM projects")
     fun deleteAll()
-
 
 }
