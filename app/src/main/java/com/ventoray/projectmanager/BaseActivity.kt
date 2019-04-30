@@ -10,10 +10,12 @@ import com.ventoray.projectmanager.util.NetworkStateReceiver
 open class BaseActivity : AppCompatActivity(), NetworkChangeListener {
 
     private var networkStateReceiever: NetworkStateReceiver? = null
+    var connected: Boolean = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
     }
 
     override fun onResume() {
@@ -33,6 +35,6 @@ open class BaseActivity : AppCompatActivity(), NetworkChangeListener {
     }
 
     override fun onNetworkStateChange(connected: Boolean) {
-        //Do Nothing
+        this.connected = connected
     }
 }

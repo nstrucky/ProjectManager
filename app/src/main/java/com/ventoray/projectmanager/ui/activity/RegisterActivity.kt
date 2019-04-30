@@ -1,10 +1,9 @@
-package com.ventoray.projectmanager.ui
+package com.ventoray.projectmanager.ui.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.ventoray.projectmanager.R
-import kotlinx.android.synthetic.main.activity_register.*
 
 class RegisterActivity : AppCompatActivity() {
 

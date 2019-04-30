@@ -45,13 +45,13 @@ class ProjectRepository(context: Context) {
      * @param project: new project to add to table
      */
     @WorkerThread
-    suspend fun insert(project: Project) {
-        projectDao.insert(project)
+    suspend fun insert(project: Project): Long {
+        return projectDao.insert(project)
     }
 
     @WorkerThread
-    suspend fun deleteAll() {
-        projectDao.deleteAll()
+    suspend fun deleteAll(): Int {
+        return projectDao.deleteAll()
     }
 
     /**

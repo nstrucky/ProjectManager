@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
-import android.renderscript.RSInvalidStateException
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -14,8 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.ventoray.projectmanager.R
-import com.ventoray.projectmanager.data.datamodel.Project
-import com.ventoray.projectmanager.data.viewmodel.ProjectViewModel
+import com.ventoray.projectmanager.ui.viewmodel.ProjectViewModel
 import com.ventoray.projectmanager.ui.adapter.ProjectListAdapter
 
 // TODO: Rename parameter arguments, choose names that match

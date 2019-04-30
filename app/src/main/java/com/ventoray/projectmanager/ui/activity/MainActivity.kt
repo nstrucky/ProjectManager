@@ -1,4 +1,4 @@
-package com.ventoray.projectmanager.ui
+package com.ventoray.projectmanager.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -20,6 +20,8 @@ import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
 import com.ventoray.projectmanager.BaseActivity
 import com.ventoray.projectmanager.R
+import com.ventoray.projectmanager.data.repo.ProjectRepository
+import com.ventoray.projectmanager.data.util.DbUtil
 import com.ventoray.projectmanager.util.FileManager
 import com.ventoray.projectmanager.util.Files.USER_OBJECT_FILE
 import com.ventoray.projectmanager.util.MessageUtil
@@ -28,6 +30,9 @@ import com.ventoray.projectmanager.ui.adapter.ProjectsPageAdapter
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.web.User
 import com.ventoray.projectmanager.web.VolleySingleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlin.coroutines.CoroutineContext
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -161,8 +166,19 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     Toast.makeText(this, R.string.logged_out, Toast.LENGTH_SHORT).show()
                 }
 
-                PreferenceUtilK.removeTokenPreferences(applicationContext)
 
+
+                //delete user data from database
+                DbUtil(applicationContext).removeAllUserData { message, success ->
+                    Log.d("MainActivity", message)
+                }
+
+                //remove token
+                PreferenceUtilK.removeTokenPreferences(applicationContext)
+                //set user to not logged in
+                PreferenceUtilK.setUserNotSignedIn(applicationContext)
+
+                //Delete user object file
                 if (FileManager.deleteFile(applicationContext, USER_OBJECT_FILE)) {
                     Log.i("LogOut", "Deleted user profile from device")
                 } else {
@@ -217,9 +233,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
     }
 
-    //TODO get projects
-
-
     private fun setNavHeaderData() {
         userNameTextView?.setText(user?.username)
         emailTextView?.setText(user?.email)
@@ -230,6 +243,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
      *@param connected - true if network state changed
      */
     override fun onNetworkStateChange(connected: Boolean) {
+        super.onNetworkStateChange(connected)
         if (!connected) {
             MessageUtil.makeToast(this, "Lost Connection")
         } else {

@@ -21,9 +21,9 @@ interface ProjectDao {
 //    fun deleteProject(id: Int)
 
     @Delete
-    fun delete(project: Project)
+    fun delete(project: Project): Int
 
     @Query("DELETE FROM projects")
-    fun deleteAll()
+    fun deleteAll(): Int
 
 }

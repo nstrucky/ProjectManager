@@ -52,5 +52,17 @@ object PreferenceUtilK {
         return getSharedPreferences(context).getBoolean(KEY_FIRST_INSTALL, true)
     }
 
+    private const val KEY_USER_SIGNED_IN = "user_signed_in_pref"
 
+    fun setUserSignedIn(context: Context) {
+        getSharedPreferences(context).edit().putBoolean(KEY_USER_SIGNED_IN, true).apply()
+    }
+
+    fun setUserNotSignedIn(context: Context) {
+        getSharedPreferences(context).edit().putBoolean(KEY_USER_SIGNED_IN, false).apply()
+    }
+
+    fun getUserSignedIn(context: Context): Boolean {
+        return getSharedPreferences(context).getBoolean(KEY_USER_SIGNED_IN, false)
+    }
 }

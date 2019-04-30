@@ -1,14 +1,10 @@
-package com.ventoray.projectmanager.data.viewmodel
+package com.ventoray.projectmanager.ui.viewmodel
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
-import com.ventoray.projectmanager.data.ProjectManagerDB
-import com.ventoray.projectmanager.data.dao.ProjectDao
 import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.data.repo.ProjectRepository
-import com.ventoray.projectmanager.util.PreferenceUtilK
-import com.ventoray.projectmanager.web.VolleySingleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

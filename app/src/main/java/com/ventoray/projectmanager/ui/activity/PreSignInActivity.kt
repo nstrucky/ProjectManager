@@ -1,4 +1,4 @@
-package com.ventoray.projectmanager.ui
+package com.ventoray.projectmanager.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,35 +8,46 @@ import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
-import com.ventoray.projectmanager.BuildConfig
+import com.ventoray.projectmanager.BaseActivity
 import com.ventoray.projectmanager.R
-import com.ventoray.projectmanager.util.MessageUtil
 import com.ventoray.projectmanager.util.MessageUtil.makeToast
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.web.VolleySingleton
 
-class PreSignInActivity : AppCompatActivity() {
+class PreSignInActivity : BaseActivity() {
+
+    private var signInIntent: Intent = Intent()
+    private var mainIntent: Intent = Intent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pre_sign_in)
+
+        signInIntent.setClass(this, MainActivity::class.java)
+        mainIntent.setClass(this, SignInActivity::class.java)
+
         //if not go to sign in activity
-        if (!signIn()) {
-            val intent: Intent = Intent()
-            intent.setClass(this, SignInActivity::class.java)
-            startActivity(intent)
+        if (shouldSignIn()) {
+            startActivity(signInIntent)
         }
     }
 
-    private fun signIn(): Boolean {
+    /**
+     * Determines if the user should sign in or not
+     */
+    private fun shouldSignIn(): Boolean {
         val token: String? = PreferenceUtilK.getClientPasswordToken(applicationContext)
         token?.let {
             checkSignIn(token)
-            return true
+            return false
         }
 
-        return false;
+        if (PreferenceUtilK.getUserSignedIn(this) && !connected) {
+            return false
+        }
+
+        return true
     }
 
     /**
@@ -51,19 +62,18 @@ class PreSignInActivity : AppCompatActivity() {
             Response.Listener<String> { response ->
                 response?.let { Log.i("SignInActivity", response) }
 
+                //User successfully verified, set logged in
+                PreferenceUtilK.setUserSignedIn(this)
+
                 //Determine if it's the first signin
                 if (PreferenceUtilK.getFirstTimeAppOpened(this)) {
                     makeToast(this, "First Time Signing In!")
 
                     PreferenceUtilK.setAppOpened(this)
                     //TODO make this a walkthrough or something
-                    val intent: Intent = Intent()
-                    intent.setClass(this, MainActivity::class.java)
-                    startActivity(intent)
+                    startActivity(mainIntent)
                 } else {
-                    val intent: Intent = Intent()
-                    intent.setClass(this, MainActivity::class.java)
-                    startActivity(intent)
+                    startActivity(mainIntent)
                 }
 
 
@@ -72,9 +82,13 @@ class PreSignInActivity : AppCompatActivity() {
                 Toast.makeText(this, R.string.no_one_signed_in, Toast.LENGTH_SHORT).show()
                 it?.let { Log.e("SignInActivity", it.message ?: "null message")  }
 
-                val signInIntent: Intent = Intent()
-                signInIntent.setClass(this, SignInActivity::class.java)
-                startActivity(signInIntent)
+                if (PreferenceUtilK.getUserSignedIn(this) && !connected) {
+                    startActivity(mainIntent)
+                } else {
+                    startActivity(signInIntent)
+                }
+
+
             }
         ) {
             override fun getHeaders(): MutableMap<String, String> {
