@@ -24,8 +24,8 @@ class PreSignInActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_pre_sign_in)
 
-        signInIntent.setClass(this, MainActivity::class.java)
-        mainIntent.setClass(this, SignInActivity::class.java)
+        signInIntent.setClass(this, SignInActivity::class.java)
+        mainIntent.setClass(this, MainActivity::class.java)
 
         //if not go to sign in activity
         if (shouldSignIn()) {

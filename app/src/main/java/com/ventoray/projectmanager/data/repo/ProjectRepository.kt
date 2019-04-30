@@ -101,8 +101,8 @@ class ProjectRepository(context: Context) {
                 projects.value = newProjects
 
                 scope.launch(Dispatchers.IO) {
-                    val rows: List<Long> = insertAll(newProjects)//Need to pass newProjects here because projects.value is mutable and may have changed
-                    Log.d("ProjectRepo", "Saving Projects from coroutine ${rows.size}")
+                    val rows: List<Long>? = insertAll(newProjects)//Need to pass newProjects here because projects.value is mutable and may have changed
+                    Log.d("ProjectRepo", "Saving Projects from coroutine ${rows?.size}")
                 }
             },
             Response.ErrorListener {
