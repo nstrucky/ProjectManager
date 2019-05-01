@@ -89,11 +89,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         user = obj as User?
 
         if (user == null || user?.id == 0) {
-            getUserFromWeb()
-            Log.d("USER", "retreiving from web")
+            getUserFromWeb { user ->
+                user?.let {
+                    //Begin download of projects
+                    ProjectRepository(this).downLoadProjects(user.id)
+                }
+            }
         } else {
             setNavHeaderData()
-            Log.d("USER", "Name: ${user?.first_name}")
         }
     }
 
@@ -201,7 +204,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
     }
 
-    private fun getUserFromWeb(): Unit {
+    private fun getUserFromWeb(onComplete: (User?)->Unit): Unit {
         val token: String? = PreferenceUtilK.getClientPasswordToken(applicationContext)
         if (token == null || token.isEmpty()) {
             val intent: Intent = Intent()
@@ -219,6 +222,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
                     //TODO control flow for error
                     setNavHeaderData()
+                    onComplete(user)
                 }
             },
             Response.ErrorListener {

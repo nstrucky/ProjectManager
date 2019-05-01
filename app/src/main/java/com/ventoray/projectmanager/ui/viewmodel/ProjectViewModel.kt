@@ -34,6 +34,14 @@ class ProjectViewModel(application: Application) : AndroidViewModel(application)
         return repository.getAllProjects(userId)
     }
 
+    fun activeProjects(): LiveData<List<Project>> {
+        return repository.getActiveProjects()
+    }
+
+    fun completedProjects(): LiveData<List<Project>> {
+        return repository.getCompletedProjects()
+    }
+
     /**
      * Wrapper so repo's insert is completely hidden from UI
      * New coroutine based on scope defined...DB operations so Dispatchers.IO

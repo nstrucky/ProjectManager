@@ -13,7 +13,7 @@ class ProjectsPageAdapter(fm: FragmentManager, context: Context) : FragmentPager
     private val NUM_PAGES: Int = tabs.size
 
     override fun getItem(position: Int): Fragment {
-        return ProjectsFragment.newInstance(tabs[position])
+        return ProjectsFragment.newInstance(position)
     }
 
     override fun getCount(): Int {
@@ -21,7 +21,6 @@ class ProjectsPageAdapter(fm: FragmentManager, context: Context) : FragmentPager
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-
         return tabs[position]
     }
 }

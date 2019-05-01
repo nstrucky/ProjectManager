@@ -10,6 +10,12 @@ interface ProjectDao {
     @Query("SELECT * FROM projects")
     fun getAllProjects(): LiveData<List<Project>>
 
+    @Query("SELECT * FROM projects WHERE status = 'Completed'")
+    fun getAllCompletedProjects(): LiveData<List<Project>>
+
+    @Query("SELECT * FROM projects WHERE status <> 'Completed'")
+    fun getAllActiveProjects(): LiveData<List<Project>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(project: Project): Long
 

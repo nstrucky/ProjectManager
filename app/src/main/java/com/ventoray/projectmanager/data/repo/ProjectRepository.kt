@@ -27,7 +27,8 @@ class ProjectRepository(context: Context) {
     private val projectDao: ProjectDao = ProjectManagerDB.getDatabase(context).projectDao()
     private val volleySingleton: VolleySingleton = VolleySingleton(context.applicationContext)
     private val token: String? = PreferenceUtilK.getClientPasswordToken(context)
-    private val allProjects: LiveData<List<Project>> = projectDao.getAllProjects()
+    private val activeProjects: LiveData<List<Project>> = projectDao.getAllActiveProjects()
+    private val completedProjects: LiveData<List<Project>> = projectDao.getAllCompletedProjects()
 
     //Coroutine Scope var/vals
     private var parentJob = Job()
@@ -66,12 +67,26 @@ class ProjectRepository(context: Context) {
     }
 
     /**
+     * Retrieves user's active projects from database
+     */
+    fun getActiveProjects(): LiveData<List<Project>> {
+        return activeProjects
+    }
+
+    /**
+     * Retrieves user's completed projects from database
+     */
+    fun getCompletedProjects(): LiveData<List<Project>> {
+        return completedProjects
+    }
+
+    /**
      * Retrieves all user's projects
      * @param userId: user ID for user currently logged into app (used in case we need to download from web)
      */
     fun getAllProjects(userId: Int): LiveData<List<Project>> {
 
-        if (allProjects.value.isNullOrEmpty()) { //TODO come up with condition to download data
+        if (activeProjects.value.isNullOrEmpty()) { //TODO come up with condition to download data
             /**
              * Right now this strategy doesn't work.  It just pulls from the web every time (allprojects.value
              * is always not null).  Need to implement time limit or something else to decide when to pull from the web
@@ -81,7 +96,7 @@ class ProjectRepository(context: Context) {
             Log.i("ProjectRepo", "Retrieving projects from Database")
         }
 
-        return allProjects
+        return activeProjects
     }
 
 
