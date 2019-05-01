@@ -1,9 +1,6 @@
-package com.ventoray.projectmanager.web
+package com.ventoray.projectmanager.data.datamodel
 
-import android.arch.persistence.room.Entity
-import android.arch.persistence.room.PrimaryKey
 import java.io.Serializable
-import java.sql.Date
 
 data class User(
     var id: Int = 0,

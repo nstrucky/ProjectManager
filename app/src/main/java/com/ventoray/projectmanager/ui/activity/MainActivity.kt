@@ -28,16 +28,14 @@ import com.ventoray.projectmanager.util.MessageUtil
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.ui.adapter.ProjectsPageAdapter
 import com.ventoray.projectmanager.web.APIv1
-import com.ventoray.projectmanager.web.User
+import com.ventoray.projectmanager.data.datamodel.User
 import com.ventoray.projectmanager.web.VolleySingleton
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlin.coroutines.CoroutineContext
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     //TODO replace this
-    private var user: User? = User()
+    private var user: User? =
+        User()
 
 
     private lateinit var emailTextView: TextView

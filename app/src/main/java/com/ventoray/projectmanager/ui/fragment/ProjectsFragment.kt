@@ -18,12 +18,10 @@ import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.ui.viewmodel.ProjectViewModel
 import com.ventoray.projectmanager.ui.adapter.ProjectListAdapter
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val KEY_FRAGMENT_TYPE = "com.ventoray.projectmanager.ui.adapter.ProjectsPageAdapter.fragmentTypeKey"
 
 /**
- * A simple [Fragment] subclass.
+ * A [Fragment] subclass.
  * Use the [ProjectsFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
