@@ -1,8 +1,7 @@
-package com.ventoray.projectmanager.ui.activity
+package com.ventoray.projectmanager.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log
 import android.widget.Toast
 import com.android.volley.Request
@@ -10,6 +9,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.ventoray.projectmanager.BaseActivity
 import com.ventoray.projectmanager.R
+import com.ventoray.projectmanager.ui.main_activity.MainActivity
 import com.ventoray.projectmanager.util.MessageUtil.makeToast
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.web.APIv1

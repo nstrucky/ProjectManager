@@ -30,6 +30,7 @@ class DbUtil(context: Context) {
         var success: Boolean = true
         val deleted: Int = ProjectRepository(context.applicationContext).deleteAll()
 
+
         //TODO determine when to set success to 'false'
 
         var message: String = "\nDeleted $deleted Projects\n${ if (success) "Success" else "Error"} "

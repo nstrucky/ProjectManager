@@ -1,4 +1,4 @@
-package com.ventoray.projectmanager.ui.adapter
+package com.ventoray.projectmanager.ui.main_activity
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView

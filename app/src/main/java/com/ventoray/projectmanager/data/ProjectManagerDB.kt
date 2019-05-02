@@ -5,9 +5,11 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 import com.ventoray.projectmanager.data.dao.ProjectDao
+import com.ventoray.projectmanager.data.dao.TaskDao
 import com.ventoray.projectmanager.data.datamodel.Project
+import com.ventoray.projectmanager.data.datamodel.Task
 
-@Database(entities = [Project::class], version = 1)
+@Database(entities = [Project::class, Task::class], version = 1)
 public abstract class ProjectManagerDB : RoomDatabase() {
 
     companion object {
@@ -36,6 +38,7 @@ public abstract class ProjectManagerDB : RoomDatabase() {
 
 
     abstract fun projectDao(): ProjectDao
+    abstract fun taskDao(): TaskDao
 
 
 

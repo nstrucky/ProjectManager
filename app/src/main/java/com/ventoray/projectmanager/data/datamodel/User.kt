@@ -1,5 +1,6 @@
 package com.ventoray.projectmanager.data.datamodel
 
+import android.arch.persistence.room.PrimaryKey
 import java.io.Serializable
 
 data class User(

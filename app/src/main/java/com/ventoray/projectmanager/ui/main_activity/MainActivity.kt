@@ -1,4 +1,4 @@
-package com.ventoray.projectmanager.ui.activity
+package com.ventoray.projectmanager.ui.main_activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -26,9 +26,9 @@ import com.ventoray.projectmanager.util.FileManager
 import com.ventoray.projectmanager.util.Files.USER_OBJECT_FILE
 import com.ventoray.projectmanager.util.MessageUtil
 import com.ventoray.projectmanager.util.PreferenceUtilK
-import com.ventoray.projectmanager.ui.adapter.ProjectsPageAdapter
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.data.datamodel.User
+import com.ventoray.projectmanager.ui.PreSignInActivity
 import com.ventoray.projectmanager.web.VolleySingleton
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -71,7 +71,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         projectsViewPager = findViewById<ViewPager>(R.id.projectsViewPager)
         projectsTabLayout.setupWithViewPager(projectsViewPager)
         projectsTabLayout.tabMode = TabLayout.MODE_FIXED
-        projectsViewPager.adapter = ProjectsPageAdapter(supportFragmentManager, this)
+        projectsViewPager.adapter =
+            ProjectsPageAdapter(supportFragmentManager, this)
 
         //TODO viewPager.setPageTransformer
 

@@ -1,4 +1,4 @@
-package com.ventoray.projectmanager.ui.viewmodel
+package com.ventoray.projectmanager.ui.main_activity
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel

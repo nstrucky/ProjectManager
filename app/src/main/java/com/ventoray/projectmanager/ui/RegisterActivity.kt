@@ -1,4 +1,4 @@
-package com.ventoray.projectmanager.ui.activity
+package com.ventoray.projectmanager.ui
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle

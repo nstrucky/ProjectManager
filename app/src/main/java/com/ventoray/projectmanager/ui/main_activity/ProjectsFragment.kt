@@ -1,4 +1,4 @@
-package com.ventoray.projectmanager.ui.fragment
+package com.ventoray.projectmanager.ui.main_activity
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
@@ -15,10 +15,8 @@ import android.view.ViewGroup
 
 import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.data.datamodel.Project
-import com.ventoray.projectmanager.ui.viewmodel.ProjectViewModel
-import com.ventoray.projectmanager.ui.adapter.ProjectListAdapter
 
-private const val KEY_FRAGMENT_TYPE = "com.ventoray.projectmanager.ui.adapter.ProjectsPageAdapter.fragmentTypeKey"
+private const val KEY_FRAGMENT_TYPE = "com.ventoray.projectmanager.ui.main_activity.ProjectsPageAdapter.fragmentTypeKey"
 
 /**
  * A [Fragment] subclass.

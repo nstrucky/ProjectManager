@@ -22,10 +22,6 @@ interface ProjectDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg projects: Project): List<Long>
 
-
-//    @Query("DELETE FROM projects WHERE id = (:id)")
-//    fun deleteProject(id: Int)
-
     @Delete
     fun delete(project: Project): Int
 

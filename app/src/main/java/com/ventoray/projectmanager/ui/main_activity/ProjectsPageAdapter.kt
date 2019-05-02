@@ -1,11 +1,11 @@
-package com.ventoray.projectmanager.ui.adapter
+package com.ventoray.projectmanager.ui.main_activity
 
 import android.content.Context
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import com.ventoray.projectmanager.R
-import com.ventoray.projectmanager.ui.fragment.ProjectsFragment
+import com.ventoray.projectmanager.ui.main_activity.ProjectsFragment
 
 class ProjectsPageAdapter(fm: FragmentManager, context: Context) : FragmentPagerAdapter(fm) {
 
