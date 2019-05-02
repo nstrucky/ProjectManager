@@ -28,7 +28,6 @@ class ProjectsFragment : Fragment() {
 
     private lateinit var projectViewModel: ProjectViewModel
     private lateinit var adapter: ProjectListAdapter
-    private lateinit var fab: FloatingActionButton
     private var FRAGMENT_TYPE: Int? = 0
     private var FRAGMENT_TYPE_ACTIVE = 0
     private var FRAGMENT_TYPE_COMPLETED = 1
@@ -51,7 +50,6 @@ class ProjectsFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
         val observable: LiveData<List<Project>>
 
-        fab = view.findViewById(R.id.fab)
         adapter = ProjectListAdapter(context)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
