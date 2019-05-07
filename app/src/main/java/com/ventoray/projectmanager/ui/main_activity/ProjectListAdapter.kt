@@ -5,10 +5,17 @@ import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.data.datamodel.Project
+import com.ventoray.projectmanager.data.util.DbUtil
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.util.*
 
 class ProjectListAdapter internal constructor(
     context: Context?
@@ -23,6 +30,7 @@ class ProjectListAdapter internal constructor(
         val dateMonthDay: TextView = itemView.findViewById(R.id.dueDateDayMonth)
         val dateYear: TextView = itemView.findViewById(R.id.dueDateYear)
         val statusTextView: TextView = itemView.findViewById(R.id.statusTextView)
+        val overdueIcon: ImageView = itemView.findViewById(R.id.icon_overdue)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProjectViewHolder {
@@ -35,6 +43,16 @@ class ProjectListAdapter internal constructor(
         holder.projectTextView.text = current.name
         holder.secondaryTextView.text = current.account_name
         holder.statusTextView.text = current.status
+
+        var today: Long = System.currentTimeMillis()
+        //Eventually may be a good idea to save the date as Long in the DB instead of String
+        var dueDate: Long = DbUtil.getLongFromDate(current.due_date)
+
+        if (today > dueDate && current.status != "Completed") {
+            holder.overdueIcon.visibility = VISIBLE
+        } else {
+            holder.overdueIcon.visibility = GONE
+        }
 
         holder.dateYear.text = current.due_date.substring(0, 4)
         holder.dateMonthDay.text = getDayMonth(current.due_date)

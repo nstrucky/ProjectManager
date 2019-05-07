@@ -25,6 +25,11 @@
     <string name="email_address">Email Address</string>
     <string name="user_role">User Role</string>
     <string name="password">Password</string>
+
+    <!--Labels -->
+    <string name="due_date">Due Date:</string>
+
+
     <string name="title_activity_pre_sign_in">PreSignInActivity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
