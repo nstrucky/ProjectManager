@@ -117,11 +117,11 @@ class ProjectRepository(context: Context) {
 
                 scope.launch(Dispatchers.IO) {
                     val rows: List<Long>? = insertAll(newProjects)//Need to pass newProjects here because projects.value is mutable and may have changed
-                    Log.d("ProjectRepo", "Saving Projects from coroutine ${rows?.size}")
+                    Log.i("ProjectRepo", "Saving Projects from coroutine ${rows?.size}")
                 }
             },
             Response.ErrorListener {
-                Log.d("ProjectRepo", "Error" + it?.localizedMessage)
+                Log.e("ProjectRepo", "Error" + it?.localizedMessage)
             }
         ) {
             override fun getHeaders(): MutableMap<String, String> {

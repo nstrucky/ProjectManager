@@ -19,7 +19,7 @@ class APIv1 {
         const val URL_LOGOUT = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/logout"
         const val URL_USER = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/user"
         const val URL_USERS = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/users"
-        const val URL_PROJETCS = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/users"
+        const val URL_PROJECTS = PROTOCOL + BuildConfig.TEST_SERVER_IP_ADDRESS + API_V1 + "/users"
 
         /**
          * Header Fields
