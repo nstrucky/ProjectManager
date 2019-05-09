@@ -5,16 +5,20 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 
 import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.data.datamodel.Project
+import com.ventoray.projectmanager.util.EventBusUtil
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 private const val KEY_FRAGMENT_TYPE = "com.ventoray.projectmanager.ui.main_activity.ProjectsPageAdapter.fragmentTypeKey"
 
@@ -58,7 +62,22 @@ class ProjectsFragment : Fragment() {
             ViewModelProviders.of(this).get(ProjectViewModel::class.java)
         } ?: throw Exception("Invalid Activity")
 
-        if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
+        subscribeUi()
+
+        return view
+    }
+
+
+    fun subscribeUi(query: String? = null): Unit {
+        val observable: LiveData<List<Project>>
+
+        if (!query.isNullOrEmpty()) {
+            if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){
+                observable = projectViewModel.searchActiveProjects("%$query%")
+            } else {
+                observable = projectViewModel.searchCompletedProjects("%$query%")
+            }
+        } else if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
             observable = projectViewModel.activeProjects()
         } else {
             observable = projectViewModel.completedProjects()
@@ -69,7 +88,6 @@ class ProjectsFragment : Fragment() {
                 adapter.setProjects(projects)
             }
         })
-        return view
     }
 
     override fun onAttach(context: Context) {
@@ -79,6 +97,24 @@ class ProjectsFragment : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onSearchEvent(event: EventBusUtil.SearchEvent) : Unit {
+
+        subscribeUi(event.query)
+
+        Toast.makeText(this.context, event.query, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
@@ -91,6 +127,7 @@ class ProjectsFragment : Fragment() {
             ProjectsFragment().apply {
                 arguments = Bundle().apply {
                     putInt(KEY_FRAGMENT_TYPE, fragmentType)
+
                 }
             }
     }

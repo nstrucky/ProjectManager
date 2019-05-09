@@ -23,4 +23,7 @@ class ProjectsPageAdapter(fm: FragmentManager, context: Context) : FragmentPager
     override fun getPageTitle(position: Int): CharSequence? {
         return tabs[position]
     }
+
+
+
 }

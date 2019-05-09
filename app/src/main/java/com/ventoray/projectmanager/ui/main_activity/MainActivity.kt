@@ -9,6 +9,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.design.widget.NavigationView
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
@@ -29,7 +30,9 @@ import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.data.datamodel.User
 import com.ventoray.projectmanager.ui.PreSignInActivity
+import com.ventoray.projectmanager.util.EventBusUtil
 import com.ventoray.projectmanager.web.VolleySingleton
+import org.greenrobot.eventbus.EventBus
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -43,6 +46,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private lateinit var projectsViewPager: ViewPager
     private lateinit var projectsTabLayout: TabLayout
+
+    private lateinit var searchBar: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,6 +67,14 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         emailTextView = navView.getHeaderView(0).findViewById(R.id.emailTextView)
         userNameTextView = navView.getHeaderView(0).findViewById(R.id.userNameTextView)
+        searchBar = findViewById(R.id.searchBar)
+
+        //TODO replace this with onKeyUp listener and dynamic query
+        searchBar.setOnClickListener {view ->
+            EventBus.getDefault().post(EventBusUtil.SearchEvent("cyp"))
+        }
+
+
         getUserData()
         setUpTabLayout()
     }
@@ -73,6 +86,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         projectsTabLayout.tabMode = TabLayout.MODE_FIXED
         projectsViewPager.adapter =
             ProjectsPageAdapter(supportFragmentManager, this)
+
 
         //TODO viewPager.setPageTransformer
 

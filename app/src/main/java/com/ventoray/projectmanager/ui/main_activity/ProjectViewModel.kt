@@ -50,6 +50,14 @@ class ProjectViewModel(application: Application) : AndroidViewModel(application)
         repository.insert(project) //suspended function in repository
     }
 
+    fun searchActiveProjects(query: String): LiveData<List<Project>> {
+        return repository.searchActiveProjects(query)
+    }
+
+    fun searchCompletedProjects(query: String): LiveData<List<Project>> {
+        return repository.searchCompletedProjects(query)
+    }
+
     /**
      * ViewModel is no longer used and will be destroyed
      */

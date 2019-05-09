@@ -80,6 +80,14 @@ class ProjectRepository(context: Context) {
         return completedProjects
     }
 
+    fun searchActiveProjects(query: String): LiveData<List<Project>> {
+        return projectDao.searchActiveProjects(query)
+    }
+
+    fun searchCompletedProjects(query: String): LiveData<List<Project>> {
+        return projectDao.searchCompletedProjects(query)
+    }
+
     /**
      * Retrieves all user's projects
      * @param userId: user ID for user currently logged into app (used in case we need to download from web)
