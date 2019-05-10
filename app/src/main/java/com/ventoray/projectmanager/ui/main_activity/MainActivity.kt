@@ -69,15 +69,26 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         userNameTextView = navView.getHeaderView(0).findViewById(R.id.userNameTextView)
         searchBar = findViewById(R.id.searchBar)
 
-        //TODO replace this with onKeyUp listener and dynamic query
-        searchBar.setOnClickListener {view ->
-            EventBus.getDefault().post(EventBusUtil.SearchEvent("cyp"))
-        }
-
+        searchBar.setOnQueryTextListener(QueryTextListener())
 
         getUserData()
         setUpTabLayout()
     }
+
+    class QueryTextListener: SearchView.OnQueryTextListener {
+        override fun onQueryTextSubmit(query: String?): Boolean {
+            EventBus.getDefault().post(EventBusUtil.SearchEvent(query))
+            if (query.isNullOrEmpty()) return false
+            return true
+        }
+
+        override fun onQueryTextChange(query: String?): Boolean {
+            EventBus.getDefault().post(EventBusUtil.SearchEvent(query))
+            if (query.isNullOrEmpty()) return false
+            return true
+        }
+    }
+
 
     private fun setUpTabLayout(): Unit {
         projectsTabLayout = findViewById<TabLayout>(R.id.projectsTabLayout)

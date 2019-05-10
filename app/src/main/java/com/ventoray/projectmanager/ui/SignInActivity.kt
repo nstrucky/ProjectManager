@@ -54,7 +54,7 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         val requestJson: JSONObject = JSONObject().apply {
 
 
-            put(APIv1.PARAM_USERNAME, "alexi.laiho@gmail.com")
+            put(APIv1.PARAM_USERNAME, "nickstruckmeyer@gmail.com")
             put(APIv1.PARAM_PASSWORD, "loomis123")
             put(APIv1.PARAM_CLIENT_ID, clientId)
             put(APIv1.PARAM_CLIENT_SECRET, clientSecret)
