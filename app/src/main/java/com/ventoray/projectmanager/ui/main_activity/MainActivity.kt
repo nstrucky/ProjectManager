@@ -2,6 +2,8 @@ package com.ventoray.projectmanager.ui.main_activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.BottomSheetBehavior
+import android.support.design.widget.BottomSheetBehavior.*
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.view.MenuItem
@@ -9,10 +11,12 @@ import android.support.v4.widget.DrawerLayout
 import android.support.design.widget.NavigationView
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.support.v7.widget.CardView
 import android.support.v7.widget.SearchView
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import com.android.volley.Request
@@ -30,6 +34,7 @@ import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.data.datamodel.User
 import com.ventoray.projectmanager.ui.PreSignInActivity
+import com.ventoray.projectmanager.ui.util.ScrimController
 import com.ventoray.projectmanager.util.EventBusUtil
 import com.ventoray.projectmanager.web.VolleySingleton
 import org.greenrobot.eventbus.EventBus
@@ -40,7 +45,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var user: User? =
         User()
 
-
     private lateinit var emailTextView: TextView
     private lateinit var userNameTextView: TextView
 
@@ -48,6 +52,11 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var projectsTabLayout: TabLayout
 
     private lateinit var searchBar: SearchView
+
+    private lateinit var bottomSheetView: CardView
+    private lateinit var bottomSheet: BottomSheetBehavior<CardView>
+
+    private lateinit var scrim: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,11 +77,28 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         emailTextView = navView.getHeaderView(0).findViewById(R.id.emailTextView)
         userNameTextView = navView.getHeaderView(0).findViewById(R.id.userNameTextView)
         searchBar = findViewById(R.id.searchBar)
+        scrim = findViewById(R.id.scrim)
+
+        scrim.setOnClickListener{view ->
+            scrim?.visibility = View.GONE
+            bottomSheet?.state = STATE_HIDDEN
+        }
 
         searchBar.setOnQueryTextListener(QueryTextListener())
 
+        setUpBottomSheet()
         getUserData()
         setUpTabLayout()
+    }
+
+    private fun setUpBottomSheet() {
+        bottomSheetView = findViewById(R.id.bottomSheetView)
+        bottomSheet = BottomSheetBehavior.from(bottomSheetView).apply {
+            state = STATE_COLLAPSED
+            isHideable = true
+            peekHeight = 0
+            setBottomSheetCallback(ScrimController(scrim))
+        }
     }
 
     class QueryTextListener: SearchView.OnQueryTextListener {
@@ -89,7 +115,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
-
     private fun setUpTabLayout(): Unit {
         projectsTabLayout = findViewById<TabLayout>(R.id.projectsTabLayout)
         projectsViewPager = findViewById<ViewPager>(R.id.projectsViewPager)
@@ -97,12 +122,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         projectsTabLayout.tabMode = TabLayout.MODE_FIXED
         projectsViewPager.adapter =
             ProjectsPageAdapter(supportFragmentManager, this)
-
-
         //TODO viewPager.setPageTransformer
 
     }
-
 
     /**
      * Checks if user profile exists on file, if not, retrieve from API
@@ -144,7 +166,10 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                bottomSheet.state = STATE_EXPANDED
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -192,8 +217,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     Log.i("Logout", response)
                     Toast.makeText(this, R.string.logged_out, Toast.LENGTH_SHORT).show()
                 }
-
-
 
                 //delete user data from database
                 DbUtil(applicationContext).removeAllUserData { message, success ->
@@ -266,7 +289,6 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         emailTextView?.setText(user?.email)
     }
 
-
     /**
      *@param connected - true if network state changed
      */
@@ -278,10 +300,5 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             MessageUtil.makeToast(this, "Connectivity Restored")
 
         }
-    }
-
-
-    fun testFragmentText(string: String?) : String {
-        return "Test String ${string}"
     }
 }

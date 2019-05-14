@@ -33,8 +33,8 @@ class ProjectsFragment : Fragment() {
     private lateinit var projectViewModel: ProjectViewModel
     private lateinit var adapter: ProjectListAdapter
     private var FRAGMENT_TYPE: Int? = 0
-    private var FRAGMENT_TYPE_ACTIVE = 0
-    private var FRAGMENT_TYPE_COMPLETED = 1
+    private val FRAGMENT_TYPE_ACTIVE = 0
+    private val FRAGMENT_TYPE_COMPLETED = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +43,15 @@ class ProjectsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        projectViewModel = activity?.run {
+            ViewModelProviders.of(this).get(ProjectViewModel::class.java)
+        } ?: throw Exception("Invalid Activity")
 
+        if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
+            subscribeUi(projectViewModel.activeProjects())
+        } else {
+            subscribeUi(projectViewModel.completedProjects())
+        }
     }
 
     override fun onCreateView(
@@ -52,51 +60,12 @@ class ProjectsFragment : Fragment() {
 
         val view: View = inflater.inflate(R.layout.fragment_projects, container, false)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
-        val observable: LiveData<List<Project>>
 
         adapter = ProjectListAdapter(context)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(context)
 
-        projectViewModel = activity?.run {
-            ViewModelProviders.of(this).get(ProjectViewModel::class.java)
-        } ?: throw Exception("Invalid Activity")
-
-        subscribeUi()
-
         return view
-    }
-
-
-    fun subscribeUi(query: String? = null): Unit {
-        val observable: LiveData<List<Project>>
-
-        if (!query.isNullOrEmpty()) {
-            if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){
-                observable = projectViewModel.searchActiveProjects("%$query%")
-            } else {
-                observable = projectViewModel.searchCompletedProjects("%$query%")
-            }
-        } else if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
-            observable = projectViewModel.activeProjects()
-        } else {
-            observable = projectViewModel.completedProjects()
-        }
-
-        observable.observe(this, Observer { projects ->
-            projects?.let {
-                adapter.setProjects(projects)
-            }
-        })
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-    }
-
-    override fun onDetach() {
-        super.onDetach()
     }
 
     override fun onStart() {
@@ -111,15 +80,33 @@ class ProjectsFragment : Fragment() {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSearchEvent(event: EventBusUtil.SearchEvent) : Unit {
+        val liveData: LiveData<List<Project>>
+        if (!event.query.isNullOrEmpty()) {
+            if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){
+                liveData = projectViewModel.searchActiveProjects("%${event.query}%")
+            } else {
+                liveData = projectViewModel.searchCompletedProjects("%${event.query}%")
+            }
+        } else if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
+            liveData = projectViewModel.activeProjects()
+        } else {
+            liveData = projectViewModel.completedProjects()
+        }
 
-        subscribeUi(event.query)
+        subscribeUi(liveData)
+    }
 
-        Toast.makeText(this.context, event.query, Toast.LENGTH_SHORT).show()
+    fun subscribeUi(liveData: LiveData<List<Project>>): Unit {
+        liveData.observe(this, Observer { projects ->
+            projects?.let {
+                adapter.setProjects(projects)
+            }
+        })
     }
 
     companion object {
         /**
-         * @param someText Parameter 1.
+         * @param fragmentType - type of fragment, either Active or Completed (Inactive) projects
          * @return A new instance of fragment ProjectsFragment.
          */
         @JvmStatic
