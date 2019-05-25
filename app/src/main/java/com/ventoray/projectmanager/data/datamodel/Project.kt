@@ -2,7 +2,6 @@ package com.ventoray.projectmanager.data.datamodel
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
-import org.jetbrains.annotations.Nullable
 
 @Entity(tableName = "projects")
 data class Project(

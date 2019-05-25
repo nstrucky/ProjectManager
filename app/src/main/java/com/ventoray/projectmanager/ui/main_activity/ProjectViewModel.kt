@@ -1,28 +1,19 @@
 package com.ventoray.projectmanager.ui.main_activity
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.ViewModel
 import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.data.repo.ProjectRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class ProjectViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository: ProjectRepository
+class ProjectViewModel @Inject constructor(private val projectRepository: ProjectRepository) : ViewModel() {
 
     //Coroutine Scope var/vals
     private var parentJob = Job()
     private val coroutineContext: CoroutineContext get() = parentJob + Dispatchers.Main
     private val scope = CoroutineScope(coroutineContext)
-
-    init {
-        repository = ProjectRepository(application)
-    }
 
     /**
      * @param userId - the user Id for user logged into apop
@@ -31,15 +22,15 @@ class ProjectViewModel(application: Application) : AndroidViewModel(application)
      * ID to retrieve project data
      */
     fun allProjects(userId: Int): LiveData<List<Project>> {
-        return repository.getAllProjects(userId)
+        return projectRepository.getAllProjects(userId)
     }
 
     fun activeProjects(): LiveData<List<Project>> {
-        return repository.getActiveProjects()
+        return projectRepository.getActiveProjects()
     }
 
     fun completedProjects(): LiveData<List<Project>> {
-        return repository.getCompletedProjects()
+        return projectRepository.getCompletedProjects()
     }
 
     /**
@@ -47,15 +38,15 @@ class ProjectViewModel(application: Application) : AndroidViewModel(application)
      * New coroutine based on scope defined...DB operations so Dispatchers.IO
      */
     fun insert(project: Project) = scope.launch(Dispatchers.IO){
-        repository.insert(project) //suspended function in repository
+        projectRepository.insert(project) //suspended function in projectRepository
     }
 
     fun searchActiveProjects(query: String): LiveData<List<Project>> {
-        return repository.searchActiveProjects(query)
+        return projectRepository.searchActiveProjects(query)
     }
 
     fun searchCompletedProjects(query: String): LiveData<List<Project>> {
-        return repository.searchCompletedProjects(query)
+        return projectRepository.searchCompletedProjects(query)
     }
 
     /**

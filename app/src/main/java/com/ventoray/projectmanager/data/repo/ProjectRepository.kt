@@ -20,13 +20,17 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
-class ProjectRepository(context: Context) {
+@Singleton
+class ProjectRepository @Inject constructor(val projectDao: ProjectDao) {
 
-    private val projectDao: ProjectDao = ProjectManagerDB.getDatabase(context).projectDao()
-    private val volleySingleton: VolleySingleton = VolleySingleton(context.applicationContext)
-    private val token: String? = PreferenceUtilK.getClientPasswordToken(context)
+
+//    @Inject private val projectDao: ProjectDao = ProjectManagerDB.getDatabase(context).projectDao()
+//    private val volleySingleton: VolleySingleton = VolleySingleton(context.applicationContext)
+//    private val token: String? = PreferenceUtilK.getClientPasswordToken(context)
     private val activeProjects: LiveData<List<Project>> = projectDao.getAllActiveProjects()
     private val completedProjects: LiveData<List<Project>> = projectDao.getAllCompletedProjects()
 
@@ -57,13 +61,11 @@ class ProjectRepository(context: Context) {
 
     /**
      * Inserts list of projects into the database
-     * See this post for info on * operator
-     *      https://stackoverflow.com/questions/39389003/kotlin-asterisk-operator-before-variable-name-or-spread-operator-in-kotlin
      * @param: projects - list of projects to be inserted into database
      */
     @WorkerThread
     suspend fun insertAll(projects: List<Project>): List<Long> {
-        return projectDao.insertAll(*projects.toTypedArray())
+        return projectDao.insertAll(projects)
     }
 
     /**
@@ -99,7 +101,7 @@ class ProjectRepository(context: Context) {
              * Right now this strategy doesn't work.  It just pulls from the web every time (allprojects.value
              * is always not null).  Need to implement time limit or something else to decide when to pull from the web
              */
-            downLoadProjects(userId)
+//            downLoadProjects(userId)
         } else {
             Log.i("ProjectRepo", "Retrieving projects from Database")
         }
@@ -114,31 +116,31 @@ class ProjectRepository(context: Context) {
      */
     fun downLoadProjects(userId: Int): MutableLiveData<List<Project>> {
         val projects: MutableLiveData<List<Project>> = MutableLiveData<List<Project>>()
-        val stringRequest: StringRequest = object : StringRequest(
-            Request.Method.GET,
-            APIv1.URL_USERS + "/$userId/projects",
-            Response.Listener { response ->
-                Log.d("ProjectRepo", response)
-                val projectType = object : TypeToken<List<Project>>() {}.type
-                val newProjects = Gson().fromJson<List<Project>>(response, projectType)// https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
-                projects.value = newProjects
-
-                scope.launch(Dispatchers.IO) {
-                    val rows: List<Long>? = insertAll(newProjects)//Need to pass newProjects here because projects.value is mutable and may have changed
-                    Log.i("ProjectRepo", "Saving Projects from coroutine ${rows?.size}")
-                }
-            },
-            Response.ErrorListener {
-                Log.e("ProjectRepo", "Error" + it?.localizedMessage)
-            }
-        ) {
-            override fun getHeaders(): MutableMap<String, String> {
-                return HashMap<String, String>().apply { put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
-            }
-        }
-
-        volleySingleton.addToRequestQueue(stringRequest)
-        Log.d("ProjectRepo", "retrieved projects list from Web")
+//        val stringRequest: StringRequest = object : StringRequest(
+//            Request.Method.GET,
+//            APIv1.URL_USERS + "/$userId/projects",
+//            Response.Listener { response ->
+//                Log.d("ProjectRepo", response)
+//                val projectType = object : TypeToken<List<Project>>() {}.type
+//                val newProjects = Gson().fromJson<List<Project>>(response, projectType)// https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
+//                projects.value = newProjects
+//
+//                scope.launch(Dispatchers.IO) {
+//                    val rows: List<Long>? = insertAll(newProjects)//Need to pass newProjects here because projects.value is mutable and may have changed
+//                    Log.i("ProjectRepo", "Saving Projects from coroutine ${rows?.size}")
+//                }
+//            },
+//            Response.ErrorListener {
+//                Log.e("ProjectRepo", "Error" + it?.localizedMessage)
+//            }
+//        ) {
+//            override fun getHeaders(): MutableMap<String, String> {
+//                return HashMap<String, String>().apply { put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
+//            }
+//        }
+//
+//        volleySingleton.addToRequestQueue(stringRequest)
+//        Log.d("ProjectRepo", "retrieved projects list from Web")
         return projects
     }
 

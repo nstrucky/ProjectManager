@@ -33,11 +33,14 @@ import com.ventoray.projectmanager.util.MessageUtil
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.web.APIv1
 import com.ventoray.projectmanager.data.datamodel.User
+import com.ventoray.projectmanager.di.test.DaggerTestComponent
+import com.ventoray.projectmanager.di.test.TestComponent
 import com.ventoray.projectmanager.ui.PreSignInActivity
 import com.ventoray.projectmanager.ui.util.ScrimController
 import com.ventoray.projectmanager.util.EventBusUtil
 import com.ventoray.projectmanager.web.VolleySingleton
 import org.greenrobot.eventbus.EventBus
+import javax.inject.Inject
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -57,6 +60,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var bottomSheet: BottomSheetBehavior<CardView>
 
     private lateinit var scrim: View
+
+    /**
+     * Both of these are suspect... the whole scheme for downloading data will likely change
+     */
+    @Inject lateinit var projectRepository: ProjectRepository
+    @Inject lateinit var dBUtil: DbUtil
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -89,6 +98,13 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setUpBottomSheet()
         getUserData()
         setUpTabLayout()
+        tryComponent()
+    }
+
+    private fun tryComponent() {
+        var testComponent: TestComponent = DaggerTestComponent.builder().build()
+        val winner = testComponent.getTheWar().getWinner()
+        Log.d("Winterfell", "The winner is house $winner")
     }
 
     private fun setUpBottomSheet() {
@@ -138,7 +154,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             getUserFromWeb { user ->
                 user?.let {
                     //Begin download of projects
-                    ProjectRepository(this).downLoadProjects(user.id)
+                    projectRepository.downLoadProjects(user.id)
                 }
             }
         } else {
@@ -219,7 +235,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
 
                 //delete user data from database
-                DbUtil(applicationContext).removeAllUserData { message, success ->
+                dBUtil.removeAllUserData { message, success ->
                     Log.d("MainActivity", message)
                 }
 

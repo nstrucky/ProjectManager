@@ -5,32 +5,33 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.*
 import com.ventoray.projectmanager.data.datamodel.Project
 
+
 @Dao
-interface ProjectDao {
+abstract class ProjectDao {
     @Query("SELECT * FROM projects")
-    fun getAllProjects(): LiveData<List<Project>>
+    abstract fun getAllProjects(): LiveData<List<Project>>
 
     @Query("SELECT * FROM projects WHERE status = 'Completed'")
-    fun getAllCompletedProjects(): LiveData<List<Project>>
+    abstract fun getAllCompletedProjects(): LiveData<List<Project>>
 
     @Query("SELECT * FROM projects WHERE status <> 'Completed'")
-    fun getAllActiveProjects(): LiveData<List<Project>>
+    abstract fun getAllActiveProjects(): LiveData<List<Project>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(project: Project): Long
+    abstract fun insert(project: Project): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(vararg projects: Project): List<Long>
+    abstract fun insertAll(projects: List<Project>): List<Long>
 
     @Delete
-    fun delete(project: Project): Int
+    abstract fun delete(project: Project): Int
 
     @Query("DELETE FROM projects")
-    fun deleteAll(): Int
+    abstract fun deleteAll(): Int
 
     @Query("SELECT * FROM projects WHERE (name LIKE :query OR account_name LIKE :query) AND status <> 'Completed'")
-    fun searchActiveProjects(query: String): LiveData<List<Project>>
+    abstract fun searchActiveProjects(query: String): LiveData<List<Project>>
 
     @Query("SELECT * FROM projects WHERE (name LIKE :query OR account_name LIKE :query) AND status = 'Completed'")
-    fun searchCompletedProjects(query: String): LiveData<List<Project>>
+    abstract fun searchCompletedProjects(query: String): LiveData<List<Project>>
 }

@@ -20,13 +20,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class TaskRepository(context: Context) {
+class TaskRepository @Inject constructor(val taskDao: TaskDao) {
 
-    val taskDao: TaskDao = ProjectManagerDB.getDatabase(context).taskDao()
-    private val token: String? = PreferenceUtilK.getClientPasswordToken(context)
-    private val volleySingleton: VolleySingleton = VolleySingleton(context.applicationContext)
+//    val taskDao: TaskDao = ProjectManagerDB.getDatabase(context).taskDao()
+//    private val token: String? = PreferenceUtilK.getClientPasswordToken(context)
+//    private val volleySingleton: VolleySingleton = VolleySingleton(context.applicationContext)
 
     //Coroutine Scope var/vals
     private var parentJob = Job()
@@ -58,31 +59,31 @@ class TaskRepository(context: Context) {
      * Downloads tasks from web
      * @param projectId: project ID for which to retrieve tasks from API
      */
-    fun downloadProjectTasks(projectId: Int) : MutableLiveData<List<Task>> {
-        val tasks: MutableLiveData<List<Task>> = MutableLiveData<List<Task>>()
-        val stringRequest: StringRequest = object : StringRequest(
-            Request.Method.GET,
-            APIv1.URL_PROJECTS + "/$projectId/tasks",
-            Response.Listener { response ->
-                val taskType = object : TypeToken<List<Task>>() {}.type
-                val newTasks = Gson().fromJson<List<Task>>(response, taskType)
-                tasks.value = newTasks
-
-                scope.launch(Dispatchers.IO) {
-                    val rows: List<Long>? = insertAll(newTasks)
-                    Log.i("TaskRepository", "Saving Tasks from coroutine ${rows?.size}")
-                }
-            },
-            Response.ErrorListener {
-                Log.e("TaskRepository", "Error" + it?.localizedMessage)
-            }
-        ) {
-            override fun getHeaders(): MutableMap<String, String> {
-                return super.getHeaders()
-            }
-        }
-
-        volleySingleton.addToRequestQueue(stringRequest)
-        return tasks
-    }
+//    fun downloadProjectTasks(projectId: Int) : MutableLiveData<List<Task>> {
+//        val tasks: MutableLiveData<List<Task>> = MutableLiveData<List<Task>>()
+//        val stringRequest: StringRequest = object : StringRequest(
+//            Request.Method.GET,
+//            APIv1.URL_PROJECTS + "/$projectId/tasks",
+//            Response.Listener { response ->
+//                val taskType = object : TypeToken<List<Task>>() {}.type
+//                val newTasks = Gson().fromJson<List<Task>>(response, taskType)
+//                tasks.value = newTasks
+//
+//                scope.launch(Dispatchers.IO) {
+//                    val rows: List<Long>? = insertAll(newTasks)
+//                    Log.i("TaskRepository", "Saving Tasks from coroutine ${rows?.size}")
+//                }
+//            },
+//            Response.ErrorListener {
+//                Log.e("TaskRepository", "Error" + it?.localizedMessage)
+//            }
+//        ) {
+//            override fun getHeaders(): MutableMap<String, String> {
+//                return super.getHeaders()
+//            }
+//        }
+//
+//        volleySingleton.addToRequestQueue(stringRequest)
+//        return tasks
+//    }
 }
