@@ -2,33 +2,43 @@ package com.ventoray.projectmanager.ui.main_activity
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 
 import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.data.datamodel.Project
+import com.ventoray.projectmanager.data.repo.Resource
+import com.ventoray.projectmanager.di.Injectable
+import com.ventoray.projectmanager.di.ViewModelFactory
 import com.ventoray.projectmanager.util.EventBusUtil
+import com.ventoray.projectmanager.util.PreferenceUtilK
+import dagger.android.AndroidInjection
+import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import javax.inject.Inject
 
 private const val KEY_FRAGMENT_TYPE = "com.ventoray.projectmanager.ui.main_activity.ProjectsPageAdapter.fragmentTypeKey"
 
 /**
  * A [Fragment] subclass.
- * Use the [ProjectsFragment.newInstance] factory method to
+ * Use the [ProjectListFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class ProjectsFragment : Fragment() {
+class ProjectListFragment : Fragment() {
+
+    @Inject lateinit var viewModelFactory: ViewModelFactory
 
     private lateinit var projectViewModel: ProjectViewModel
     private lateinit var adapter: ProjectListAdapter
@@ -43,15 +53,31 @@ class ProjectsFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        projectViewModel = activity?.run {
-            ViewModelProviders.of(this).get(ProjectViewModel::class.java)
-        } ?: throw Exception("Invalid Activity")
 
-        if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
-            subscribeUi(projectViewModel.activeProjects())
-        } else {
-            subscribeUi(projectViewModel.completedProjects())
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        projectViewModel = activity?.run {
+            projectViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProjectViewModel::class.java)
+//        } ?: throw Exception("Invalid Activity")
+
+
+        val token = PreferenceUtilK.getClientPasswordToken(this.requireContext())
+//        token?.let {
+//            projectViewModel.setUserLogin(UserLogin(token, 2))
+//        }
+
+
+        token?.let {
+            subscribeUi(projectViewModel.getAllProjects(UserLogin(token, 2)))
         }
+
+    }
+
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
     }
 
     override fun onCreateView(
@@ -78,28 +104,35 @@ class ProjectsFragment : Fragment() {
         EventBus.getDefault().unregister(this)
     }
 
+    @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSearchEvent(event: EventBusUtil.SearchEvent) : Unit {
-        val liveData: LiveData<List<Project>>
-        if (!event.query.isNullOrEmpty()) {
-            if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){
-                liveData = projectViewModel.searchActiveProjects("%${event.query}%")
-            } else {
-                liveData = projectViewModel.searchCompletedProjects("%${event.query}%")
-            }
-        } else if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
-            liveData = projectViewModel.activeProjects()
-        } else {
-            liveData = projectViewModel.completedProjects()
-        }
-
-        subscribeUi(liveData)
+//        val liveData: LiveData<List<Project>>
+//        if (!event.query.isNullOrEmpty()) {
+//            if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){
+//                liveData = projectViewModel.searchActiveProjects("%${event.query}%")
+//            } else {
+//                liveData = projectViewModel.searchCompletedProjects("%${event.query}%")
+//            }
+//        } else if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
+//            liveData = projectViewModel.activeProjects()
+//        } else {
+//            liveData = projectViewModel.completedProjects()
+//        }
+//
+//        subscribeUi(liveData)
     }
 
-    fun subscribeUi(liveData: LiveData<List<Project>>): Unit {
+    fun subscribeUi(liveData: LiveData<Resource<List<Project>>>): Unit {
+        Log.d("subscribeUi", "Subscribing the UI")
         liveData.observe(this, Observer { projects ->
             projects?.let {
-                adapter.setProjects(projects)
+                if (projects.data == null) {
+                    adapter.setProjects(emptyList())
+                } else {
+                    adapter.setProjects(projects.data)
+                }
+
             }
         })
     }
@@ -107,11 +140,11 @@ class ProjectsFragment : Fragment() {
     companion object {
         /**
          * @param fragmentType - type of fragment, either Active or Completed (Inactive) projects
-         * @return A new instance of fragment ProjectsFragment.
+         * @return A new instance of fragment ProjectListFragment.
          */
         @JvmStatic
         fun newInstance(fragmentType: Int) =
-            ProjectsFragment().apply {
+            ProjectListFragment().apply {
                 arguments = Bundle().apply {
                     putInt(KEY_FRAGMENT_TYPE, fragmentType)
 

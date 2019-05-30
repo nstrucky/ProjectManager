@@ -2,7 +2,6 @@ package com.ventoray.projectmanager.data.repo
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import android.support.annotation.WorkerThread
 import android.util.Log
 import com.android.volley.Request
@@ -10,12 +9,11 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.ventoray.projectmanager.data.ProjectManagerDB
+import com.ventoray.projectmanager.api.APIv1
+import com.ventoray.projectmanager.api.WebService
 import com.ventoray.projectmanager.data.dao.ProjectDao
 import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.util.PreferenceUtilK
-import com.ventoray.projectmanager.web.APIv1
-import com.ventoray.projectmanager.web.VolleySingleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,7 +23,8 @@ import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
 @Singleton
-class ProjectRepository @Inject constructor(val projectDao: ProjectDao) {
+class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
+                                            private val webService: WebService) {
 
 
 //    @Inject private val projectDao: ProjectDao = ProjectManagerDB.getDatabase(context).projectDao()
@@ -34,10 +33,7 @@ class ProjectRepository @Inject constructor(val projectDao: ProjectDao) {
     private val activeProjects: LiveData<List<Project>> = projectDao.getAllActiveProjects()
     private val completedProjects: LiveData<List<Project>> = projectDao.getAllCompletedProjects()
 
-    //Coroutine Scope var/vals
-    private var parentJob = Job()
-    private val coroutineContext: CoroutineContext get() = parentJob + Dispatchers.Main
-    private val scope = CoroutineScope(coroutineContext)
+
 
 
     /**
@@ -143,5 +139,29 @@ class ProjectRepository @Inject constructor(val projectDao: ProjectDao) {
 //        Log.d("ProjectRepo", "retrieved projects list from Web")
         return projects
     }
+
+
+    fun loadProjects(userId: Int, token: String): LiveData<Resource<List<Project>>> {
+        return object : NetworkBoundResource<List<Project>, List<Project>> () {
+            override fun onFetchFailed() {
+                super.onFetchFailed()
+            }
+
+            override fun saveCallResult(item: List<Project>) {
+                projectDao.insertAll(item)
+            }
+
+            override fun shouldFetch(data: List<Project>?): Boolean {
+                Log.d("Should Fetch", if (data == null) "True" else "False" )
+               return true
+            }
+
+            override fun loadFromDb() = projectDao.getAllProjects()
+
+            override fun createCall() =  webService.getUserProjects("Bearer $token", userId)
+
+        }.asLiveData()
+    }
+
 
 }

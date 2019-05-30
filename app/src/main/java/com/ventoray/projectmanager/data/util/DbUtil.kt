@@ -38,7 +38,7 @@ class DbUtil @Inject constructor(val projectRepo: ProjectRepository) {
          * Simply returns the number of milliseconds from the lang date given a string from project_manager DB
          * @param date - date string from DB
          */
-        fun getLongFromDate(date: String): Long {
+        fun getLongFromDate(date: String?): Long {
             return SimpleDateFormat("yyyy-MM-dd").parse(date).time
         }
     }

@@ -11,7 +11,8 @@ import javax.inject.Singleton
 @Component(
     modules = [
         AndroidInjectionModule::class,
-        AppModule::class
+        AppModule::class,
+        MainActivityModule::class
     ]
 )
 interface AppComponent {
@@ -22,6 +23,6 @@ interface AppComponent {
 
         fun build(): AppComponent
     }
-        fun inject(projectManagerApp: ProjectManagerApp)
+    fun inject(projectManagerApp: ProjectManagerApp)
 }
 

@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import com.ventoray.projectmanager.R
-import com.ventoray.projectmanager.ui.main_activity.ProjectsFragment
 
 class ProjectsPageAdapter(fm: FragmentManager, context: Context) : FragmentPagerAdapter(fm) {
 
@@ -13,7 +12,7 @@ class ProjectsPageAdapter(fm: FragmentManager, context: Context) : FragmentPager
     private val NUM_PAGES: Int = tabs.size
 
     override fun getItem(position: Int): Fragment {
-        return ProjectsFragment.newInstance(position)
+        return ProjectListFragment.newInstance(position)
     }
 
     override fun getCount(): Int {

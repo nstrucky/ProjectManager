@@ -4,6 +4,11 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 
 /*
@@ -38,6 +43,11 @@ abstract class NetworkBoundResource<ResultType, RequestType>
 
     private val result = MediatorLiveData<Resource<ResultType>>()
 
+    //Coroutine Scope var/vals
+    private var parentJob = Job()
+    private val coroutineContext: CoroutineContext get() = parentJob + Dispatchers.Main
+    private val scope = CoroutineScope(coroutineContext)
+
     init {
         result.value = Resource.loading(null)
         @Suppress("LeakingThis")
@@ -70,8 +80,31 @@ abstract class NetworkBoundResource<ResultType, RequestType>
         result.addSource(apiResponse) { response ->
             result.removeSource(apiResponse)
             result.removeSource(dbSource)
+/*
+//        This is all just genius
             when (response) {
+                is ApiSuccessResponse -> {
+                }
 
+                is ApiErrorResponse -> {
+                }
+
+                is ApiEmptyResponse -> {
+                }
+            }*/
+
+            //not a good idea, may not just be null or not null outcomes
+            if (response != null) {
+
+                scope.launch(Dispatchers.IO) {
+                    saveCallResult(processResponse(response))
+                }
+
+                scope.launch(Dispatchers.Main) {
+                    result.addSource(loadFromDb()) { newData ->
+                        setValue(Resource.success(newData))
+                    }
+                }
             }
         }
     }
@@ -80,8 +113,11 @@ abstract class NetworkBoundResource<ResultType, RequestType>
 
     fun asLiveData() = result as LiveData<Resource<ResultType>>
 
+    /**
+     * Does nothing for now
+     */
     @WorkerThread
-    protected open fun processResponse(/*TODO*/) = String()/*response.body*/
+    protected open fun processResponse(response: RequestType) = response/*response.body*/
 
     @WorkerThread
     protected abstract fun saveCallResult(item: RequestType)

@@ -11,8 +11,8 @@ import com.android.volley.toolbox.*
 import com.ventoray.projectmanager.BuildConfig
 import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.util.PreferenceUtilK
-import com.ventoray.projectmanager.web.APIv1
-import com.ventoray.projectmanager.web.VolleySingleton
+import com.ventoray.projectmanager.api.APIv1
+import com.ventoray.projectmanager.api.VolleySingleton
 
 import kotlinx.android.synthetic.main.activity_sign_in.*
 import org.json.JSONObject

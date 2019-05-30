@@ -1,25 +1,12 @@
 package com.ventoray.projectmanager.data.repo
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import android.support.annotation.WorkerThread
-import android.util.Log
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.ventoray.projectmanager.data.ProjectManagerDB
 import com.ventoray.projectmanager.data.dao.TaskDao
 import com.ventoray.projectmanager.data.datamodel.Task
-import com.ventoray.projectmanager.util.PreferenceUtilK
-import com.ventoray.projectmanager.web.APIv1
-import com.ventoray.projectmanager.web.VolleySingleton
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
