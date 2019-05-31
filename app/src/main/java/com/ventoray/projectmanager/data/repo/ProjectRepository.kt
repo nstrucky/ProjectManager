@@ -64,26 +64,47 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
         return projectDao.insertAll(projects)
     }
 
-    /**
-     * Retrieves user's active projects from database
-     */
-    fun getActiveProjects(): LiveData<List<Project>> {
-        return activeProjects
+    fun searchActiveProjects(query: String, userId: Int, token: String): LiveData<Resource<List<Project>>> {
+        return object : NetworkBoundResource<List<Project>, List<Project>> () {
+            override fun onFetchFailed() {
+                super.onFetchFailed()
+            }
+
+            override fun saveCallResult(item: List<Project>) {
+                projectDao.insertAll(item)
+            }
+
+            override fun shouldFetch(data: List<Project>?): Boolean {
+                Log.d("Should Fetch", data.isNullOrEmpty().toString())
+                return data.isNullOrEmpty()
+            }
+
+            override fun loadFromDb() = projectDao.searchActiveProjects(query)
+
+            override fun createCall() = webService.getUserProjects("Bearer $token", userId)
+        }.asLiveData()
+
     }
 
-    /**
-     * Retrieves user's completed projects from database
-     */
-    fun getCompletedProjects(): LiveData<List<Project>> {
-        return completedProjects
-    }
+    fun searchCompletedProjects(query: String, userId: Int, token: String): LiveData<Resource<List<Project>>> {
+        return object : NetworkBoundResource<List<Project>, List<Project>> () {
+            override fun onFetchFailed() {
+                super.onFetchFailed()
+            }
 
-    fun searchActiveProjects(query: String): LiveData<List<Project>> {
-        return projectDao.searchActiveProjects(query)
-    }
+            override fun saveCallResult(item: List<Project>) {
+                projectDao.insertAll(item)
+            }
 
-    fun searchCompletedProjects(query: String): LiveData<List<Project>> {
-        return projectDao.searchCompletedProjects(query)
+            override fun shouldFetch(data: List<Project>?): Boolean {
+                Log.d("Should Fetch", data.isNullOrEmpty().toString())
+                return data.isNullOrEmpty()
+            }
+
+            override fun loadFromDb() = projectDao.searchCompletedProjects(query)
+
+            override fun createCall() = webService.getUserProjects("Bearer $token", userId)
+        }.asLiveData()
     }
 
     /**
@@ -106,42 +127,7 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
     }
 
 
-    /**
-     * Downloads projects from web
-     * @param userId: user ID for user currently logged into app
-     */
-    fun downLoadProjects(userId: Int): MutableLiveData<List<Project>> {
-        val projects: MutableLiveData<List<Project>> = MutableLiveData<List<Project>>()
-//        val stringRequest: StringRequest = object : StringRequest(
-//            Request.Method.GET,
-//            APIv1.URL_USERS + "/$userId/projects",
-//            Response.Listener { response ->
-//                Log.d("ProjectRepo", response)
-//                val projectType = object : TypeToken<List<Project>>() {}.type
-//                val newProjects = Gson().fromJson<List<Project>>(response, projectType)// https://stackoverflow.com/questions/33381384/how-to-use-typetoken-generics-with-gson-in-kotlin
-//                projects.value = newProjects
-//
-//                scope.launch(Dispatchers.IO) {
-//                    val rows: List<Long>? = insertAll(newProjects)//Need to pass newProjects here because projects.value is mutable and may have changed
-//                    Log.i("ProjectRepo", "Saving Projects from coroutine ${rows?.size}")
-//                }
-//            },
-//            Response.ErrorListener {
-//                Log.e("ProjectRepo", "Error" + it?.localizedMessage)
-//            }
-//        ) {
-//            override fun getHeaders(): MutableMap<String, String> {
-//                return HashMap<String, String>().apply { put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
-//            }
-//        }
-//
-//        volleySingleton.addToRequestQueue(stringRequest)
-//        Log.d("ProjectRepo", "retrieved projects list from Web")
-        return projects
-    }
-
-
-    fun loadProjects(userId: Int, token: String): LiveData<Resource<List<Project>>> {
+    fun loadActiveProjects(userId: Int, token: String): LiveData<Resource<List<Project>>> {
         return object : NetworkBoundResource<List<Project>, List<Project>> () {
             override fun onFetchFailed() {
                 super.onFetchFailed()
@@ -152,16 +138,40 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
             }
 
             override fun shouldFetch(data: List<Project>?): Boolean {
-                Log.d("Should Fetch", if (data == null) "True" else "False" )
-               return true
+                Log.d("Should Fetch", data.isNullOrEmpty().toString())
+               return data.isNullOrEmpty()
             }
 
-            override fun loadFromDb() = projectDao.getAllProjects()
+            override fun loadFromDb() = projectDao.getAllActiveProjects()
 
             override fun createCall() =  webService.getUserProjects("Bearer $token", userId)
 
         }.asLiveData()
     }
+
+    fun loadCompletedProjects(userId: Int, token: String): LiveData<Resource<List<Project>>> {
+        return object : NetworkBoundResource<List<Project>, List<Project>> () {
+            override fun onFetchFailed() {
+                super.onFetchFailed()
+            }
+
+            override fun saveCallResult(item: List<Project>) {
+                projectDao.insertAll(item)
+            }
+
+            override fun shouldFetch(data: List<Project>?): Boolean {
+                Log.d("Should Fetch", data.isNullOrEmpty().toString())
+                return data.isNullOrEmpty()
+            }
+
+            override fun loadFromDb() = projectDao.getAllCompletedProjects()
+
+            override fun createCall() =  webService.getUserProjects("Bearer $token", userId)
+
+        }.asLiveData()
+    }
+
+
 
 
 }

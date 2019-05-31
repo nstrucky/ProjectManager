@@ -24,9 +24,9 @@ class ProjectViewModel @Inject constructor(val projectRepository: ProjectReposit
 //        }
 //    }
 
-    fun getAllProjects(userLogin: UserLogin): LiveData<Resource<List<Project>>> {
-        return projectRepository.loadProjects(userLogin.userId, userLogin.token)
-    }
+//    fun getAllProjects(userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+//        return projectRepository.loadProjects(userLogin.userId, userLogin.token)
+//    }
 
     /**
      * @param userId - the user Id for user logged into apop
@@ -38,13 +38,14 @@ class ProjectViewModel @Inject constructor(val projectRepository: ProjectReposit
 //        return projectRepository.getAllProjects(userId)
 //    }
 //
-//    fun activeProjects(): LiveData<List<Project>> {
-//        return projectRepository.getActiveProjects()
-//    }
-//
-//    fun completedProjects(): LiveData<List<Project>> {
-//        return projectRepository.getCompletedProjects()
-//    }
+    fun activeProjects(userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+        return projectRepository.loadActiveProjects(userLogin.userId, userLogin.token)
+    }
+
+    fun completedProjects(userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+        return projectRepository.loadCompletedProjects(userLogin.userId, userLogin.token)
+    }
+
 //
 //    /**
 //     * Wrapper so repo's insert is completely hidden from UI
@@ -54,13 +55,13 @@ class ProjectViewModel @Inject constructor(val projectRepository: ProjectReposit
 //        projectRepository.insert(project) //suspended function in projectRepository
 //    }
 //
-//    fun searchActiveProjects(query: String): LiveData<List<Project>> {
-//        return projectRepository.searchActiveProjects(query)
-//    }
-//
-//    fun searchCompletedProjects(query: String): LiveData<List<Project>> {
-//        return projectRepository.searchCompletedProjects(query)
-//    }
+    fun searchActiveProjects(query: String, userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+        return projectRepository.searchActiveProjects(query, userLogin.userId, userLogin.token)
+    }
+
+    fun searchCompletedProjects(query: String, userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+        return projectRepository.searchCompletedProjects(query, userLogin.userId, userLogin.token)
+    }
 //
 //
 //

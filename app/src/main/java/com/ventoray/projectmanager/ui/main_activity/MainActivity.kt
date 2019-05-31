@@ -170,11 +170,12 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.
 
         user = obj as User?
 
+        //TODO this is unnecessary
         if (user == null || user?.id == 0) {
             getUserFromWeb { user ->
                 user?.let {
                     //Begin download of projects
-                    projectRepository.downLoadProjects(user.id)
+//                    projectRepository.downLoadProjects(user.id)
                 }
             }
         } else {

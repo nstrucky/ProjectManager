@@ -42,6 +42,7 @@ class ProjectListFragment : Fragment() {
 
     private lateinit var projectViewModel: ProjectViewModel
     private lateinit var adapter: ProjectListAdapter
+    private lateinit var userLogin: UserLogin
     private var FRAGMENT_TYPE: Int? = 0
     private val FRAGMENT_TYPE_ACTIVE = 0
     private val FRAGMENT_TYPE_COMPLETED = 1
@@ -53,8 +54,6 @@ class ProjectListFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,17 +61,19 @@ class ProjectListFragment : Fragment() {
             projectViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProjectViewModel::class.java)
 //        } ?: throw Exception("Invalid Activity")
 
+        var token = PreferenceUtilK.getClientPasswordToken(this.requireContext())
 
-        val token = PreferenceUtilK.getClientPasswordToken(this.requireContext())
-//        token?.let {
-//            projectViewModel.setUserLogin(UserLogin(token, 2))
-//        }
+        if (token.isNullOrEmpty()) token = ""
+        userLogin = UserLogin(token, 2)//TODO change to signed in user
 
-
-        token?.let {
-            subscribeUi(projectViewModel.getAllProjects(UserLogin(token, 2)))
+        /**
+         *  This may not be the best solution right now because the WebService will be called for both fragments
+         */
+        if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
+            subscribeUi(projectViewModel.activeProjects(userLogin))
+        } else {
+            subscribeUi(projectViewModel.completedProjects(userLogin))
         }
-
     }
 
     override fun onAttach(context: Context?) {
@@ -107,25 +108,25 @@ class ProjectListFragment : Fragment() {
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onSearchEvent(event: EventBusUtil.SearchEvent) : Unit {
-//        val liveData: LiveData<List<Project>>
-//        if (!event.query.isNullOrEmpty()) {
-//            if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){
-//                liveData = projectViewModel.searchActiveProjects("%${event.query}%")
-//            } else {
-//                liveData = projectViewModel.searchCompletedProjects("%${event.query}%")
-//            }
-//        } else if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
-//            liveData = projectViewModel.activeProjects()
-//        } else {
-//            liveData = projectViewModel.completedProjects()
-//        }
-//
-//        subscribeUi(liveData)
+        var liveData: LiveData<Resource<List<Project>>>? = null
+        if (!event.query.isNullOrEmpty()) {
+            if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){
+                liveData = projectViewModel.searchActiveProjects("%${event.query}%", userLogin)
+            } else {
+                liveData = projectViewModel.searchCompletedProjects("%${event.query}%", userLogin)
+            }
+        } else if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
+            liveData = projectViewModel.activeProjects(userLogin)
+        } else {
+            liveData = projectViewModel.completedProjects(userLogin)
+        }
+
+        subscribeUi(liveData)
     }
 
-    fun subscribeUi(liveData: LiveData<Resource<List<Project>>>): Unit {
+    fun subscribeUi(liveData: LiveData<Resource<List<Project>>>?): Unit {
         Log.d("subscribeUi", "Subscribing the UI")
-        liveData.observe(this, Observer { projects ->
+        liveData?.observe(this, Observer { projects ->
             projects?.let {
                 if (projects.data == null) {
                     adapter.setProjects(emptyList())
