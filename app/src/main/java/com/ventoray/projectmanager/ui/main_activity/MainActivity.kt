@@ -1,5 +1,7 @@
 package com.ventoray.projectmanager.ui.main_activity
 
+import android.arch.lifecycle.ViewModelProvider
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
@@ -10,6 +12,7 @@ import android.view.MenuItem
 import android.support.v4.widget.DrawerLayout
 import android.support.design.widget.NavigationView
 import android.support.design.widget.TabLayout
+import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.CardView
 import android.support.v7.widget.SearchView
@@ -31,15 +34,23 @@ import com.ventoray.projectmanager.util.FileManager
 import com.ventoray.projectmanager.util.Files.USER_OBJECT_FILE
 import com.ventoray.projectmanager.util.MessageUtil
 import com.ventoray.projectmanager.util.PreferenceUtilK
-import com.ventoray.projectmanager.web.APIv1
+import com.ventoray.projectmanager.api.APIv1
 import com.ventoray.projectmanager.data.datamodel.User
+import com.ventoray.projectmanager.di.test.DaggerTestComponent
+import com.ventoray.projectmanager.di.test.TestComponent
 import com.ventoray.projectmanager.ui.PreSignInActivity
 import com.ventoray.projectmanager.ui.util.ScrimController
 import com.ventoray.projectmanager.util.EventBusUtil
-import com.ventoray.projectmanager.web.VolleySingleton
+import com.ventoray.projectmanager.api.VolleySingleton
+import com.ventoray.projectmanager.di.ViewModelFactory
+import dagger.android.AndroidInjection
+import dagger.android.AndroidInjector
+import dagger.android.DispatchingAndroidInjector
+import dagger.android.support.HasSupportFragmentInjector
 import org.greenrobot.eventbus.EventBus
+import javax.inject.Inject
 
-class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.OnNavigationItemSelectedListener {
 
     //TODO replace this
     private var user: User? =
@@ -58,7 +69,21 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private lateinit var scrim: View
 
+    /**
+     * Both of these are suspect... the whole scheme for downloading data will likely change
+     */
+    @Inject lateinit var projectRepository: ProjectRepository
+    @Inject lateinit var dBUtil: DbUtil
+    @Inject lateinit var androidFragInjector: DispatchingAndroidInjector<Fragment>
+
+
+    override fun supportFragmentInjector(): AndroidInjector<Fragment> {
+        return androidFragInjector
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this) //Call before super!
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -89,6 +114,17 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setUpBottomSheet()
         getUserData()
         setUpTabLayout()
+        tryComponent()
+
+
+
+
+    }
+
+    private fun tryComponent() {
+        var testComponent: TestComponent = DaggerTestComponent.builder().build()
+        val winner = testComponent.getTheWar().getWinner()
+        Log.d("Winterfell", "The winner is house $winner")
     }
 
     private fun setUpBottomSheet() {
@@ -134,11 +170,12 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         user = obj as User?
 
+        //TODO this is unnecessary
         if (user == null || user?.id == 0) {
             getUserFromWeb { user ->
                 user?.let {
                     //Begin download of projects
-                    ProjectRepository(this).downLoadProjects(user.id)
+//                    projectRepository.downLoadProjects(user.id)
                 }
             }
         } else {
@@ -219,7 +256,7 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
 
                 //delete user data from database
-                DbUtil(applicationContext).removeAllUserData { message, success ->
+                dBUtil.removeAllUserData { message, success ->
                     Log.d("MainActivity", message)
                 }
 
@@ -301,4 +338,5 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         }
     }
+
 }

@@ -7,15 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class DbUtil(context: Context) {
-
-    private val context: Context
-
-    init {
-        this.context = context
-    }
+class DbUtil @Inject constructor(val projectRepo: ProjectRepository) {
 
     //Coroutine Scope var/vals
     private var parentJob = Job()
@@ -28,7 +23,7 @@ class DbUtil(context: Context) {
      */
     fun removeAllUserData(callback: (String, Boolean)->Unit) = scope.launch(Dispatchers.IO) {
         var success: Boolean = true
-        val deleted: Int = ProjectRepository(context.applicationContext).deleteAll()
+        val deleted: Int = projectRepo.deleteAll()
 
 
         //TODO determine when to set success to 'false'
@@ -43,7 +38,7 @@ class DbUtil(context: Context) {
          * Simply returns the number of milliseconds from the lang date given a string from project_manager DB
          * @param date - date string from DB
          */
-        fun getLongFromDate(date: String): Long {
+        fun getLongFromDate(date: String?): Long {
             return SimpleDateFormat("yyyy-MM-dd").parse(date).time
         }
     }

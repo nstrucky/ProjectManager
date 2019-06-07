@@ -12,8 +12,8 @@ import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.ui.main_activity.MainActivity
 import com.ventoray.projectmanager.util.MessageUtil.makeToast
 import com.ventoray.projectmanager.util.PreferenceUtilK
-import com.ventoray.projectmanager.web.APIv1
-import com.ventoray.projectmanager.web.VolleySingleton
+import com.ventoray.projectmanager.api.APIv1
+import com.ventoray.projectmanager.api.VolleySingleton
 
 class PreSignInActivity : BaseActivity() {
 

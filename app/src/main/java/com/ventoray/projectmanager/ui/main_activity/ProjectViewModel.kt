@@ -1,28 +1,32 @@
 package com.ventoray.projectmanager.ui.main_activity
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Transformations
+import android.arch.lifecycle.ViewModel
 import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.data.repo.ProjectRepository
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import com.ventoray.projectmanager.data.repo.Resource
+import kotlinx.coroutines.*
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class ProjectViewModel(application: Application) : AndroidViewModel(application) {
+class ProjectViewModel @Inject constructor(val projectRepository: ProjectRepository) : ViewModel() {
 
-    private val repository: ProjectRepository
+//    private val _userLogin = MutableLiveData<UserLogin>()
+//
+//    val projects: LiveData<Resource<List<Project>>> = Transformations
+//        .switchMap(_userLogin) { userLogin -> projectRepository.loadProjects(userLogin.userId, userLogin.token)}
+//
+//    fun setUserLogin(userLogin: UserLogin) {
+//        if (_userLogin.value?.userId != userLogin.userId) {
+//            _userLogin.value = userLogin
+//        }
+//    }
 
-    //Coroutine Scope var/vals
-    private var parentJob = Job()
-    private val coroutineContext: CoroutineContext get() = parentJob + Dispatchers.Main
-    private val scope = CoroutineScope(coroutineContext)
-
-    init {
-        repository = ProjectRepository(application)
-    }
+//    fun getAllProjects(userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+//        return projectRepository.loadProjects(userLogin.userId, userLogin.token)
+//    }
 
     /**
      * @param userId - the user Id for user logged into apop
@@ -30,39 +34,53 @@ class ProjectViewModel(application: Application) : AndroidViewModel(application)
      * This is not a great design, if the api were ever opened to a public audience, then they could use any user's
      * ID to retrieve project data
      */
-    fun allProjects(userId: Int): LiveData<List<Project>> {
-        return repository.getAllProjects(userId)
+//    fun allProjects(userId: Int): LiveData<List<Project>> {
+//        return projectRepository.getAllProjects(userId)
+//    }
+//
+    fun activeProjects(userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+        return projectRepository.loadActiveProjects(userLogin.userId, userLogin.token)
     }
 
-    fun activeProjects(): LiveData<List<Project>> {
-        return repository.getActiveProjects()
+    fun completedProjects(userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+        return projectRepository.loadCompletedProjects(userLogin.userId, userLogin.token)
     }
 
-    fun completedProjects(): LiveData<List<Project>> {
-        return repository.getCompletedProjects()
+//
+//    /**
+//     * Wrapper so repo's insert is completely hidden from UI
+//     * New coroutine based on scope defined...DB operations so Dispatchers.IO
+//     */
+//    fun insert(project: Project) = scope.launch(Dispatchers.IO){
+//        projectRepository.insert(project) //suspended function in projectRepository
+//    }
+//
+    fun searchActiveProjects(query: String, userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+        return projectRepository.searchActiveProjects(query, userLogin.userId, userLogin.token)
     }
 
-    /**
-     * Wrapper so repo's insert is completely hidden from UI
-     * New coroutine based on scope defined...DB operations so Dispatchers.IO
-     */
-    fun insert(project: Project) = scope.launch(Dispatchers.IO){
-        repository.insert(project) //suspended function in repository
+    fun searchCompletedProjects(query: String, userLogin: UserLogin): LiveData<Resource<List<Project>>> {
+        return projectRepository.searchCompletedProjects(query, userLogin.userId, userLogin.token)
     }
+//
+//
+//
+//    fun getAllProjects(token: String, userId: Int): LiveData<Resource<List<Project>>> {
+//        return projectRepository.loadProjects(userId, token)
+//    }
 
-    fun searchActiveProjects(query: String): LiveData<List<Project>> {
-        return repository.searchActiveProjects(query)
-    }
-
-    fun searchCompletedProjects(query: String): LiveData<List<Project>> {
-        return repository.searchCompletedProjects(query)
-    }
 
     /**
      * ViewModel is no longer used and will be destroyed
      */
-    override fun onCleared() {
-        super.onCleared()
-        parentJob.cancel() //cancels any long running jobs
-    }
+//    override fun onCleared() {
+//        super.onCleared()
+//        parentJob.cancel() //cancels any long running jobs
+//    }
 }
+
+class UserLogin(val token: String, val userId: Int) {
+
+}
+
+
