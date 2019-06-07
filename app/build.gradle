@@ -30,6 +30,7 @@ android {
             buildConfigField("String", "TEST_API_SECRET", TEST_API_SECRET)
             buildConfigField("String", "TEST_SERVER_IP_ADDRESS", TEST_SERVER_IP_ADDRESS)
             buildConfigField("String", "TEST_CLIENT_ID", TEST_CLIENT_ID)
+            buildConfigField("String", "PUSHER_APP_KEY", PUSHER_APP_KEY)
         }
     }
 }
@@ -79,6 +80,9 @@ dependencies {
     implementation 'com.google.dagger:dagger-android:2.16'
     implementation 'com.google.dagger:dagger-android-support:2.16'
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.16'
+
+    //Pusher
+    implementation 'com.pusher:pusher-java-client:1.5.0'
 }
 
 kotlin {

@@ -26,7 +26,12 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
+import com.pusher.client.Pusher
+import com.pusher.client.PusherOptions
+import com.pusher.client.channel.Channel
+import com.pusher.client.channel.SubscriptionEventListener
 import com.ventoray.projectmanager.BaseActivity
+import com.ventoray.projectmanager.BuildConfig
 import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.data.repo.ProjectRepository
 import com.ventoray.projectmanager.data.util.DbUtil
@@ -115,10 +120,21 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.
         getUserData()
         setUpTabLayout()
         tryComponent()
+        testPusher()
+    }
 
 
+    private fun testPusher() {
+        var options = PusherOptions();
+        options.setCluster("mt1");
+        val pusher = Pusher(BuildConfig.PUSHER_APP_KEY, options);
+        val channel: Channel = pusher.subscribe("projects-channel");
+        channel.bind("App\\Events\\ProjectCreated", SubscriptionEventListener() { channelName, eventName, data ->
+            Log.d("MainActivity", channelName)
+            Log.d("MainActivity", data)
+        });
 
-
+        pusher.connect();
     }
 
     private fun tryComponent() {
