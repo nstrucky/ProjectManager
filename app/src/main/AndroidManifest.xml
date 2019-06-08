@@ -19,7 +19,7 @@
         <activity android:name=".BaseActivity">
         </activity>
         <activity
-                android:name=".ui.main_activity.MainActivity"
+                android:name=".ui.projects.ProjectsActivity"
                 android:label="@string/title_activity_main"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>

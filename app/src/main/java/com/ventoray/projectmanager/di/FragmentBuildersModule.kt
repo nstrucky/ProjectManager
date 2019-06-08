@@ -1,6 +1,6 @@
 package com.ventoray.projectmanager.di
 
-import com.ventoray.projectmanager.ui.main_activity.ProjectListFragment
+import com.ventoray.projectmanager.ui.projects.ProjectListFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

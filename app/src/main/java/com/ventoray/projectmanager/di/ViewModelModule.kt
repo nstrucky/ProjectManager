@@ -2,7 +2,7 @@ package com.ventoray.projectmanager.di
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
-import com.ventoray.projectmanager.ui.main_activity.ProjectViewModel
+import com.ventoray.projectmanager.ui.projects.ProjectViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap

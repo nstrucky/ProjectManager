@@ -1,27 +1,24 @@
-package com.ventoray.projectmanager.ui.main_activity
+package com.ventoray.projectmanager.ui.projects
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 
-import com.ventoray.projectmanager.R
 import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.data.repo.Resource
-import com.ventoray.projectmanager.di.Injectable
+import com.ventoray.projectmanager.databinding.FragmentProjectsBinding
 import com.ventoray.projectmanager.di.ViewModelFactory
+import com.ventoray.projectmanager.ui.util.getViewModel
 import com.ventoray.projectmanager.util.EventBusUtil
 import com.ventoray.projectmanager.util.PreferenceUtilK
-import dagger.android.AndroidInjection
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -40,9 +37,10 @@ class ProjectListFragment : Fragment() {
 
     @Inject lateinit var viewModelFactory: ViewModelFactory
 
-    private lateinit var projectViewModel: ProjectViewModel
+    private lateinit var viewDataBinding: FragmentProjectsBinding
     private lateinit var adapter: ProjectListAdapter
     private lateinit var userLogin: UserLogin
+
     private var FRAGMENT_TYPE: Int? = 0
     private val FRAGMENT_TYPE_ACTIVE = 0
     private val FRAGMENT_TYPE_COMPLETED = 1
@@ -52,17 +50,39 @@ class ProjectListFragment : Fragment() {
         FRAGMENT_TYPE = arguments?.getInt(KEY_FRAGMENT_TYPE, 0)
     }
 
+
+    override fun onAttach(context: Context?) {
+        AndroidSupportInjection.inject(this)
+        super.onAttach(context)
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+        setUpListAdapter()
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?): View? {
+        val binding = FragmentProjectsBinding.inflate(inflater, container, false).apply {
+            viewmodel = getViewModel(ProjectViewModel::class.java, viewModelFactory)
+        }
+
+        viewDataBinding = binding
+        return binding.root
+    }
+
+    private fun setUpListAdapter() {
+        adapter = ProjectListAdapter()
+        viewDataBinding.recyclerview.adapter = adapter
+        viewDataBinding.recyclerview.layoutManager = LinearLayoutManager(context)
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        projectViewModel = activity?.run {
-            projectViewModel = ViewModelProviders.of(this, viewModelFactory).get(ProjectViewModel::class.java)
-//        } ?: throw Exception("Invalid Activity")
-
         var token = PreferenceUtilK.getClientPasswordToken(this.requireContext())
-
         if (token.isNullOrEmpty()) token = ""
         userLogin = UserLogin(token, 2)//TODO change to signed in user
 
@@ -70,29 +90,10 @@ class ProjectListFragment : Fragment() {
          *  This may not be the best solution right now because the WebService will be called for both fragments
          */
         if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
-            subscribeUi(projectViewModel.activeProjects(userLogin))
+            subscribeUi(viewDataBinding.viewmodel?.activeProjects(userLogin))
         } else {
-            subscribeUi(projectViewModel.completedProjects(userLogin))
+            subscribeUi(viewDataBinding.viewmodel?.completedProjects(userLogin))
         }
-    }
-
-    override fun onAttach(context: Context?) {
-        AndroidSupportInjection.inject(this)
-        super.onAttach(context)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?): View? {
-
-        val view: View = inflater.inflate(R.layout.fragment_projects, container, false)
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerview)
-
-        adapter = ProjectListAdapter(context)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        return view
     }
 
     override fun onStart() {
@@ -111,14 +112,14 @@ class ProjectListFragment : Fragment() {
         var liveData: LiveData<Resource<List<Project>>>? = null
         if (!event.query.isNullOrEmpty()) {
             if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){
-                liveData = projectViewModel.searchActiveProjects("%${event.query}%", userLogin)
+                liveData = viewDataBinding.viewmodel?.searchActiveProjects("%${event.query}%", userLogin)
             } else {
-                liveData = projectViewModel.searchCompletedProjects("%${event.query}%", userLogin)
+                liveData = viewDataBinding.viewmodel?.searchCompletedProjects("%${event.query}%", userLogin)
             }
         } else if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE) {
-            liveData = projectViewModel.activeProjects(userLogin)
+            liveData = viewDataBinding.viewmodel?.activeProjects(userLogin)
         } else {
-            liveData = projectViewModel.completedProjects(userLogin)
+            liveData = viewDataBinding.viewmodel?.completedProjects(userLogin)
         }
 
         subscribeUi(liveData)

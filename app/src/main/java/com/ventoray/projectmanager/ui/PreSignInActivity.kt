@@ -9,7 +9,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.ventoray.projectmanager.BaseActivity
 import com.ventoray.projectmanager.R
-import com.ventoray.projectmanager.ui.main_activity.MainActivity
+import com.ventoray.projectmanager.ui.projects.ProjectsActivity
 import com.ventoray.projectmanager.util.MessageUtil.makeToast
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.api.APIv1
@@ -25,7 +25,7 @@ class PreSignInActivity : BaseActivity() {
         setContentView(R.layout.activity_pre_sign_in)
 
         signInIntent.setClass(this, SignInActivity::class.java)
-        mainIntent.setClass(this, MainActivity::class.java)
+        mainIntent.setClass(this, ProjectsActivity::class.java)
 
         //if not go to sign in activity
         if (shouldSignIn()) {

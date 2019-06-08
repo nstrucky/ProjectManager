@@ -1,15 +1,11 @@
-package com.ventoray.projectmanager.ui.main_activity
+package com.ventoray.projectmanager.ui.projects
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
 import android.arch.lifecycle.ViewModel
 import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.data.repo.ProjectRepository
 import com.ventoray.projectmanager.data.repo.Resource
-import kotlinx.coroutines.*
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 class ProjectViewModel @Inject constructor(val projectRepository: ProjectRepository) : ViewModel() {
 

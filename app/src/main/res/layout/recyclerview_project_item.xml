@@ -1,81 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:layout_marginBottom="1dp"
->
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-            android:id="@+id/projectNameTextView"
-            android:text="Name"
-            style="@style/RecyclerLabel.Primary"
-            android:layout_marginStart="@dimen/margin_horizontal"
-            android:layout_marginTop="@dimen/margin_vertical"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+    <data>
 
-    <TextView
-            android:id="@+id/secondaryNameTextView"
-            android:text="second name"
-            style="@style/RecyclerLabel.Secondary"
-            app:layout_constraintTop_toBottomOf="@id/projectNameTextView"
-            app:layout_constraintStart_toStartOf="@id/projectNameTextView"
-    />
+        <variable name="project" type="com.ventoray.projectmanager.data.datamodel.Project"/>
+    </data>
 
-    <TextView
-            android:id="@+id/dueDateLabel"
-            style="@style/RecyclerLabel.Secondary"
-            android:text="@string/due_date"
-            app:layout_constraintEnd_toStartOf="@+id/statusTextView"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="8dp"
-            app:layout_constraintHorizontal_bias="0.828"
-            app:layout_constraintTop_toBottomOf="@+id/secondaryNameTextView"/>
-
-    <TextView
-            android:id="@+id/dueDateDayMonth"
-            android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:text="05 Feb"
-            app:layout_constraintTop_toBottomOf="@+id/dueDateLabel"
-            app:layout_constraintStart_toStartOf="@+id/dueDateLabel"
-            app:layout_constraintEnd_toEndOf="@+id/dueDateLabel"/>
+            android:background="@android:color/white"
+            android:layout_marginBottom="1dp"
+    >
 
-    <TextView
-            android:id="@+id/dueDateYear"
-            style="@style/RecyclerLabel.Secondary"
-            android:text="1900"
-            app:layout_constraintTop_toBottomOf="@+id/dueDateDayMonth"
-            app:layout_constraintStart_toStartOf="@+id/dueDateDayMonth"
-            app:layout_constraintEnd_toEndOf="@+id/dueDateDayMonth"/>
+        <TextView
+                android:id="@+id/projectNameTextView"
+                android:text="@{project.name}"
+                style="@style/RecyclerLabel.Primary"
+                android:layout_marginStart="@dimen/margin_horizontal"
+                android:layout_marginTop="@dimen/margin_vertical"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+                android:id="@+id/secondaryNameTextView"
+                android:text="@{project.account_name}"
+                style="@style/RecyclerLabel.Secondary"
+                app:layout_constraintTop_toBottomOf="@id/projectNameTextView"
+                app:layout_constraintStart_toStartOf="@id/projectNameTextView"
+        />
+
+        <TextView
+                android:id="@+id/dueDateLabel"
+                style="@style/RecyclerLabel.Secondary"
+                android:text="@string/due_date"
+                app:layout_constraintEnd_toStartOf="@+id/statusTextView"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp"
+                app:layout_constraintHorizontal_bias="0.828"
+                app:layout_constraintTop_toBottomOf="@+id/secondaryNameTextView"/>
+
+        <TextView
+                android:id="@+id/dueDateDayMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:dateText="@{project.due_date}"
+                app:layout_constraintTop_toBottomOf="@+id/dueDateLabel"
+                app:layout_constraintStart_toStartOf="@+id/dueDateLabel"
+                app:layout_constraintEnd_toEndOf="@+id/dueDateLabel"/>
+
+        <TextView
+                android:id="@+id/dueDateYear"
+                style="@style/RecyclerLabel.Secondary"
+                android:text="@{project.due_date.substring(0, 4)}"
+                app:layout_constraintTop_toBottomOf="@+id/dueDateDayMonth"
+                app:layout_constraintStart_toStartOf="@+id/dueDateDayMonth"
+                app:layout_constraintEnd_toEndOf="@+id/dueDateDayMonth"/>
 
 
-    <TextView
-            android:id="@+id/statusTextView"
-            style="@style/RecyclerStatus"
-            android:layout_width="125dp"
-            android:layout_height="wrap_content"
-            android:text="Test"
-            android:background="@android:color/holo_blue_light"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+        <TextView
+                android:id="@+id/statusTextView"
+                style="@style/RecyclerStatus"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:text="@{project.status}"
+                app:statusColor="@{project.status}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
 
-    <ImageView android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               android:src="@drawable/ic_priority_high_black_24dp"
-               app:layout_constraintTop_toBottomOf="@+id/dueDateLabel"
-               android:id="@+id/icon_overdue"
-               android:visibility="gone"
-               app:layout_constraintStart_toEndOf="@+id/dueDateDayMonth"
-               android:layout_marginStart="8dp"/>
+        <ImageView android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:src="@drawable/ic_priority_high_black_24dp"
+                   app:layout_constraintTop_toBottomOf="@+id/dueDateLabel"
+                   android:id="@+id/icon_overdue"
+                   android:visibility="gone"
+                   app:dueDate="@{project.due_date}"
+                   app:status="@{project.status}"
+                   app:layout_constraintStart_toEndOf="@+id/dueDateDayMonth"
+                   android:layout_marginStart="8dp"/>
 
 
-</android.support.constraint.ConstraintLayout>
+    </android.support.constraint.ConstraintLayout>
+</layout>

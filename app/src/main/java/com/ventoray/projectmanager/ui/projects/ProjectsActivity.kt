@@ -1,7 +1,5 @@
-package com.ventoray.projectmanager.ui.main_activity
+package com.ventoray.projectmanager.ui.projects
 
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
@@ -47,7 +45,6 @@ import com.ventoray.projectmanager.ui.PreSignInActivity
 import com.ventoray.projectmanager.ui.util.ScrimController
 import com.ventoray.projectmanager.util.EventBusUtil
 import com.ventoray.projectmanager.api.VolleySingleton
-import com.ventoray.projectmanager.di.ViewModelFactory
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -55,7 +52,7 @@ import dagger.android.support.HasSupportFragmentInjector
 import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
-class MainActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.OnNavigationItemSelectedListener {
+class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.OnNavigationItemSelectedListener {
 
     //TODO replace this
     private var user: User? =
@@ -90,7 +87,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this) //Call before super!
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_projects)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
@@ -130,8 +127,8 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.
         val pusher = Pusher(BuildConfig.PUSHER_APP_KEY, options);
         val channel: Channel = pusher.subscribe("projects-channel");
         channel.bind("App\\Events\\ProjectCreated", SubscriptionEventListener() { channelName, eventName, data ->
-            Log.d("MainActivity", channelName)
-            Log.d("MainActivity", data)
+            Log.d("ProjectsActivity", channelName)
+            Log.d("ProjectsActivity", data)
         });
 
         pusher.connect();
@@ -273,7 +270,7 @@ class MainActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.
 
                 //delete user data from database
                 dBUtil.removeAllUserData { message, success ->
-                    Log.d("MainActivity", message)
+                    Log.d("ProjectsActivity", message)
                 }
 
                 //remove token
