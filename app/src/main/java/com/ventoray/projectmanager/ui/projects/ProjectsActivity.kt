@@ -24,6 +24,9 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.Channel
@@ -45,12 +48,18 @@ import com.ventoray.projectmanager.ui.PreSignInActivity
 import com.ventoray.projectmanager.ui.util.ScrimController
 import com.ventoray.projectmanager.util.EventBusUtil
 import com.ventoray.projectmanager.api.VolleySingleton
+import com.ventoray.projectmanager.data.datamodel.Project
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.support.HasSupportFragmentInjector
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
+import org.json.JSONObject
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.OnNavigationItemSelectedListener {
 
@@ -121,15 +130,28 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
     }
 
 
+    /**
+     * This is just a proof of concept method for Pusher.
+     *
+     *   It basically shows that pusher can update the UI in realtime with the server DB
+     */
     private fun testPusher() {
         var options = PusherOptions();
         options.setCluster("mt1");
         val pusher = Pusher(BuildConfig.PUSHER_APP_KEY, options);
         val channel: Channel = pusher.subscribe("projects-channel");
         channel.bind("App\\Events\\ProjectCreated", SubscriptionEventListener() { channelName, eventName, data ->
-            Log.d("ProjectsActivity", channelName)
-            Log.d("ProjectsActivity", data)
-        });
+            val jsonObject = JSONObject(data)
+            val projectJson = jsonObject.getJSONObject("project")
+            val gson: Gson = GsonBuilder().setLenient().create()
+            val project: Project? = gson.fromJson(projectJson.toString(), Project::class.java)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                project?.let {
+                    projectRepository.insert(project)
+                }
+            }
+        })
 
         pusher.connect();
     }
