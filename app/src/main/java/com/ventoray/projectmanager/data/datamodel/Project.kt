@@ -7,23 +7,24 @@ import com.google.gson.annotations.SerializedName
 @Entity(tableName = "projects")
 data class Project(
     @SerializedName("id")
-    @PrimaryKey var id: Int = 0,
+    @PrimaryKey
+    var id: Int,
     @SerializedName("name")
-    var name: String = "",
+    var name: String?,
     @SerializedName("account_name")
-    var account_name: String = "",
+    var account_name: String?,
     @SerializedName("account_number")
-    var account_number: String = "",
+    var account_number: String?,
     @SerializedName("description")
-    var description: String = "",
+    var description: String?,
     @SerializedName("status")
-    var status: String = "",
+    var status: String?,
     @SerializedName("due_date")
-    var due_date: String = "",
+    var due_date: String?,
     @SerializedName("created_at")
-    var created_at: String = "",
+    var created_at: String?,
     @SerializedName("updated_at")
-    var updated_at: String = ""
+    var updated_at: String?
 ) {
 
 }

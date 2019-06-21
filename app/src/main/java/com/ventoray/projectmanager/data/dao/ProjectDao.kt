@@ -1,7 +1,6 @@
 package com.ventoray.projectmanager.data.dao
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.*
 import com.ventoray.projectmanager.data.datamodel.Project
 

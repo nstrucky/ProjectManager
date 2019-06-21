@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MediatorLiveData
 import android.support.annotation.MainThread
 import android.support.annotation.WorkerThread
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -50,13 +51,18 @@ abstract class NetworkBoundResource<ResultType, RequestType>
 
     init {
         result.value = Resource.loading(null)
+        Log.d("NBR", "init")
         @Suppress("LeakingThis")
         val dbSource = loadFromDb()
+        Log.d("NBR - dbSource", dbSource.toString())
         result.addSource(dbSource) { data ->
+            Log.d("NBR - data", data.toString())
             result.removeSource(dbSource)
             if (shouldFetch(data)) {
+                Log.d("NBR", "should fetch")
                 fetchFromNetwork(dbSource)
             } else {
+                Log.d("NBR", "should not fetch")
                 result.addSource(dbSource) { newData ->
                     setValue(Resource.success(newData))
                 }

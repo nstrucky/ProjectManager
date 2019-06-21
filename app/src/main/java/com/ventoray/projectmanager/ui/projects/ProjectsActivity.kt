@@ -25,8 +25,6 @@ import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
-import com.google.gson.reflect.TypeToken
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.Channel
@@ -49,6 +47,8 @@ import com.ventoray.projectmanager.ui.util.ScrimController
 import com.ventoray.projectmanager.util.EventBusUtil
 import com.ventoray.projectmanager.api.VolleySingleton
 import com.ventoray.projectmanager.data.datamodel.Project
+import com.ventoray.projectmanager.data.repo.UserRepository
+import com.ventoray.projectmanager.ui.common.UserViewModel
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -59,13 +59,12 @@ import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.OnNavigationItemSelectedListener {
 
     //TODO replace this
-    private var user: User? =
-        User()
+//    private var user: User? =
+//        User()
 
     private lateinit var emailTextView: TextView
     private lateinit var userNameTextView: TextView
@@ -84,9 +83,11 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
      * Both of these are suspect... the whole scheme for downloading data will likely change
      */
     @Inject lateinit var projectRepository: ProjectRepository
+    @Inject lateinit var userRepository: UserRepository
     @Inject lateinit var dBUtil: DbUtil
     @Inject lateinit var androidFragInjector: DispatchingAndroidInjector<Fragment>
-
+    @Inject lateinit var userViewModel: UserViewModel
+//    private val userViewModel by lazy { ViewModelProviders.of(this).get(UserViewModel::class.java) }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> {
         return androidFragInjector
@@ -122,11 +123,35 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
 
         searchBar.setOnQueryTextListener(QueryTextListener())
 
+//        userViewModel.setTokenData(PreferenceUtilK.getClientPasswordToken(this))
+
+        var string = PreferenceUtilK.getClientPasswordToken(this)
+
+        string?.let {
+            val user: User? = userViewModel.getUser(string, 0)?.value?.data
+            Log.d("ProjectsActivity", "User retrieved: ${user?.username}")
+        }
+
+
+//        val binding = DataBindingUtil.setContentView<ActivityProjectsBinding>(this, R.layout.activity_projects)
+//        val navBinding: NavHeaderMainBinding = DataBindingUtil
+//            .inflate(layoutInflater, R.layout.nav_header_main, binding.navView, false)
+////        binding.navView.addHeaderView(_binding.root)
+//        navBinding.user = userViewModel.user
+
+
+
         setUpBottomSheet()
-        getUserData()
+//        getUserData()
         setUpTabLayout()
         tryComponent()
         testPusher()
+        setNavHeaderData()
+    }
+
+    private fun setNavHeaderData() {
+//        userNameTextView?.setText(userViewModel.user.value?.data?.username)
+//        emailTextView?.setText(userViewModel.user.value?.data?.email)
     }
 
 
@@ -200,23 +225,25 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
     /**
      * Checks if user profile exists on file, if not, retrieve from API
      */
-    private fun getUserData() {
-        val obj: Any? = FileManager.readObjectFromFile(applicationContext, USER_OBJECT_FILE)
+//    private fun getUserData() {
+//        val obj: Any? = FileManager.readObjectFromFile(applicationContext, USER_OBJECT_FILE)
+//
+//        user = obj as User?
+//
+//        //TODO this is unnecessary
+//        if (user == null || user?.id == 0) {
+//            getUserFromWeb { user ->
+//                user?.let {
+//                    //Begin download of projects
+////                    projectRepository.downLoadProjects(user.id)
+//                }
+//            }
+//        } else {
+//            setNavHeaderData()
+//        }
+//    }
 
-        user = obj as User?
 
-        //TODO this is unnecessary
-        if (user == null || user?.id == 0) {
-            getUserFromWeb { user ->
-                user?.let {
-                    //Begin download of projects
-//                    projectRepository.downLoadProjects(user.id)
-                }
-            }
-        } else {
-            setNavHeaderData()
-        }
-    }
 
     override fun onBackPressed() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -262,7 +289,7 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
 
             }
             R.id.nav_share -> {
-
+                setNavHeaderData()
             }
             R.id.logout -> {
                 logout()
@@ -323,43 +350,40 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
         VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
     }
 
-    private fun getUserFromWeb(onComplete: (User?)->Unit): Unit {
-        val token: String? = PreferenceUtilK.getClientPasswordToken(applicationContext)
-        if (token == null || token.isEmpty()) {
-            val intent: Intent = Intent()
-            intent.setClass(this, PreSignInActivity::class.java)
-            startActivity(intent)
-        }
+//    private fun getUserFromWeb(onComplete: (User?)->Unit): Unit {
+//        val token: String? = PreferenceUtilK.getClientPasswordToken(applicationContext)
+//        if (token == null || token.isEmpty()) {
+//            val intent: Intent = Intent()
+//            intent.setClass(this, PreSignInActivity::class.java)
+//            startActivity(intent)
+//        }
+//
+//        val stringRequest = object : StringRequest(
+//            Request.Method.GET, APIv1.URL_USER,
+//            Response.Listener<String> { response ->
+//                response?.let {
+//                    Log.i("User", response)
+//                    user = Gson().fromJson(response, User::class.java)
+//                    FileManager.writeObjectToFile(this, user, USER_OBJECT_FILE)
+//
+//                    //TODO control flow for error
+//                    setNavHeaderData()
+//                    onComplete(user)
+//                }
+//            },
+//            Response.ErrorListener {
+//                it?.let { Log.e("RetreiveUser", it.message ?: "null message") }
+//                Toast.makeText(this, R.string.retrieve_user_failed, Toast.LENGTH_SHORT).show()
+//            }
+//        ) {
+//            override fun getHeaders(): MutableMap<String, String> {
+//                return HashMap<String, String>().apply { put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
+//            }
+//        }
+//        VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
+//    }
 
-        val stringRequest = object : StringRequest(
-            Request.Method.GET, APIv1.URL_USER,
-            Response.Listener<String> { response ->
-                response?.let {
-                    Log.i("User", response)
-                    user = Gson().fromJson(response, User::class.java)
-                    FileManager.writeObjectToFile(this, user, USER_OBJECT_FILE)
 
-                    //TODO control flow for error
-                    setNavHeaderData()
-                    onComplete(user)
-                }
-            },
-            Response.ErrorListener {
-                it?.let { Log.e("RetreiveUser", it.message ?: "null message") }
-                Toast.makeText(this, R.string.retrieve_user_failed, Toast.LENGTH_SHORT).show()
-            }
-        ) {
-            override fun getHeaders(): MutableMap<String, String> {
-                return HashMap<String, String>().apply { put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
-            }
-        }
-        VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
-    }
-
-    private fun setNavHeaderData() {
-        userNameTextView?.setText(user?.username)
-        emailTextView?.setText(user?.email)
-    }
 
     /**
      *@param connected - true if network state changed

@@ -10,6 +10,7 @@ import com.ventoray.projectmanager.api.WebService
 import com.ventoray.projectmanager.data.ProjectManagerDB
 import com.ventoray.projectmanager.data.dao.ProjectDao
 import com.ventoray.projectmanager.data.dao.TaskDao
+import com.ventoray.projectmanager.data.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
@@ -60,5 +61,11 @@ class AppModule {
     @Provides
     fun provideTaskDao(db: ProjectManagerDB): TaskDao {
         return db.taskDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserDao(db: ProjectManagerDB): UserDao {
+        return db.userDao()
     }
 }

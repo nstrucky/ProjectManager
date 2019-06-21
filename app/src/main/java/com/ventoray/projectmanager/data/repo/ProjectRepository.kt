@@ -1,40 +1,21 @@
 package com.ventoray.projectmanager.data.repo
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import android.support.annotation.WorkerThread
 import android.util.Log
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.ventoray.projectmanager.api.APIv1
 import com.ventoray.projectmanager.api.WebService
 import com.ventoray.projectmanager.data.dao.ProjectDao
 import com.ventoray.projectmanager.data.datamodel.Project
-import com.ventoray.projectmanager.util.PreferenceUtilK
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.coroutines.CoroutineContext
 
 @Singleton
 class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
                                             private val webService: WebService) {
 
 
-//    @Inject private val projectDao: ProjectDao = ProjectManagerDB.getDatabase(context).projectDao()
-//    private val volleySingleton: VolleySingleton = VolleySingleton(context.applicationContext)
-//    private val token: String? = PreferenceUtilK.getClientPasswordToken(context)
-    private val activeProjects: LiveData<List<Project>> = projectDao.getAllActiveProjects()
-    private val completedProjects: LiveData<List<Project>> = projectDao.getAllCompletedProjects()
-
-
-
+//    private val activeProjects: LiveData<List<Project>> = projectDao.getAllActiveProjects()
+//    private val completedProjects: LiveData<List<Project>> = projectDao.getAllCompletedProjects()
 
     /**
      * WorkerThread annotation indicates method needs to be called from a non-UI thread.
@@ -75,7 +56,7 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
             }
 
             override fun shouldFetch(data: List<Project>?): Boolean {
-                Log.d("Should Fetch", data.isNullOrEmpty().toString())
+                Log.d("ProjectRepo", "Should Fetch " + data.isNullOrEmpty().toString())
                 return data.isNullOrEmpty()
             }
 
@@ -97,7 +78,7 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
             }
 
             override fun shouldFetch(data: List<Project>?): Boolean {
-                Log.d("Should Fetch", data.isNullOrEmpty().toString())
+                Log.d("ProjectRepo", "Should Fetch " + data.isNullOrEmpty().toString())
                 return data.isNullOrEmpty()
             }
 
@@ -106,26 +87,6 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
             override fun createCall() = webService.getUserProjects("Bearer $token", userId)
         }.asLiveData()
     }
-
-    /**
-     * Retrieves all user's projects
-     * @param userId: user ID for user currently logged into app (used in case we need to download from web)
-     */
-    fun getAllProjects(userId: Int): LiveData<List<Project>> {
-
-        if (activeProjects.value.isNullOrEmpty()) { //TODO come up with condition to download data
-            /**
-             * Right now this strategy doesn't work.  It just pulls from the web every time (allprojects.value
-             * is always not null).  Need to implement time limit or something else to decide when to pull from the web
-             */
-//            downLoadProjects(userId)
-        } else {
-            Log.i("ProjectRepo", "Retrieving projects from Database")
-        }
-
-        return activeProjects
-    }
-
 
     fun loadActiveProjects(userId: Int, token: String): LiveData<Resource<List<Project>>> {
         return object : NetworkBoundResource<List<Project>, List<Project>> () {
@@ -138,7 +99,7 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
             }
 
             override fun shouldFetch(data: List<Project>?): Boolean {
-                Log.d("Should Fetch", data.isNullOrEmpty().toString())
+                Log.d("ProjectRepo", "Should Fetch " + data.isNullOrEmpty().toString())
                return data.isNullOrEmpty()
             }
 
@@ -160,7 +121,7 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
             }
 
             override fun shouldFetch(data: List<Project>?): Boolean {
-                Log.d("Should Fetch", data.isNullOrEmpty().toString())
+                Log.d("ProjectRepo", "Should Fetch " + data.isNullOrEmpty().toString())
                 return data.isNullOrEmpty()
             }
 

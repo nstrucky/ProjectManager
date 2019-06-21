@@ -44,16 +44,15 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
         startActivity(intent)
     }
 
+    //TODO Replace this whole flow with retrofit2, NetworkBoundResource, and Repository
     private fun signIn(): Unit {
-        //TODO use these variables
+
         val username: String = inputUsername.text.toString()
         val password: String = inputPassword.text.toString()
         val clientId: String = BuildConfig.TEST_CLIENT_ID
         val clientSecret: String = BuildConfig.TEST_API_SECRET
         val volley: VolleySingleton = VolleySingleton.getInstance(applicationContext)
         val requestJson: JSONObject = JSONObject().apply {
-
-
             put(APIv1.PARAM_USERNAME, "nickstruckmeyer@gmail.com")
             put(APIv1.PARAM_PASSWORD, "loomis123")
             put(APIv1.PARAM_CLIENT_ID, clientId)

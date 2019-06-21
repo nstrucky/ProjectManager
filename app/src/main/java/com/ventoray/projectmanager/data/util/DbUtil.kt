@@ -1,7 +1,7 @@
 package com.ventoray.projectmanager.data.util
 
-import android.content.Context
 import com.ventoray.projectmanager.data.repo.ProjectRepository
+import com.ventoray.projectmanager.data.repo.UserRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -10,7 +10,9 @@ import java.text.SimpleDateFormat
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class DbUtil @Inject constructor(val projectRepo: ProjectRepository) {
+class DbUtil @Inject constructor(private val projectRepo: ProjectRepository,
+                                 private val userRepository: UserRepository
+) {
 
     //Coroutine Scope var/vals
     private var parentJob = Job()
@@ -24,6 +26,7 @@ class DbUtil @Inject constructor(val projectRepo: ProjectRepository) {
     fun removeAllUserData(callback: (String, Boolean)->Unit) = scope.launch(Dispatchers.IO) {
         var success: Boolean = true
         val deleted: Int = projectRepo.deleteAll()
+        val uDeleted: Int = userRepository.delete()
 
 
         //TODO determine when to set success to 'false'
