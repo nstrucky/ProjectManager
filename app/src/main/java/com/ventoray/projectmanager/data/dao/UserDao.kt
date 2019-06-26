@@ -14,8 +14,8 @@ abstract class UserDao {
      *   Selects the user saved in database
      *   Note: there should only be one ever saved
      */
-    @Query("SELECT * FROM user WHERE id = :id")
-    abstract fun getUser(id: Int): LiveData<User>
+    @Query("SELECT * FROM user ORDER BY id LIMIT 1")
+    abstract fun getUser(): LiveData<User>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract fun insert(user: User): Long

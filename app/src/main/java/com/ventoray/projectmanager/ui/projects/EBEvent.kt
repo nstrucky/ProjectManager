@@ -1,6 +1,6 @@
-package com.ventoray.projectmanager.util
+package com.ventoray.projectmanager.ui.projects
 
-class EventBusUtil {
+class EBEvent {
 
     class SearchEvent(val query: String?)
 

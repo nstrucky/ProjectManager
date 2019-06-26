@@ -1,4 +1,4 @@
-package com.ventoray.projectmanager.ui.util
+package com.ventoray.projectmanager.ui.common
 
 import android.support.design.widget.BottomSheetBehavior
 import android.view.View

@@ -10,14 +10,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 
 import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.data.repo.Resource
 import com.ventoray.projectmanager.databinding.FragmentProjectsBinding
 import com.ventoray.projectmanager.di.ViewModelFactory
 import com.ventoray.projectmanager.ui.util.getViewModel
-import com.ventoray.projectmanager.util.EventBusUtil
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import dagger.android.support.AndroidSupportInjection
 import org.greenrobot.eventbus.EventBus
@@ -108,7 +106,7 @@ class ProjectListFragment : Fragment() {
 
     @Suppress("unused")
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onSearchEvent(event: EventBusUtil.SearchEvent) : Unit {
+    fun onSearchEvent(event: EBEvent.SearchEvent) : Unit {
         var liveData: LiveData<Resource<List<Project>>>? = null
         if (!event.query.isNullOrEmpty()) {
             if (FRAGMENT_TYPE == FRAGMENT_TYPE_ACTIVE){

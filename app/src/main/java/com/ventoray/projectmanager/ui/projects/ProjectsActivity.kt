@@ -1,5 +1,7 @@
 package com.ventoray.projectmanager.ui.projects
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomSheetBehavior
@@ -39,15 +41,14 @@ import com.ventoray.projectmanager.util.Files.USER_OBJECT_FILE
 import com.ventoray.projectmanager.util.MessageUtil
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.api.APIv1
-import com.ventoray.projectmanager.data.datamodel.User
-import com.ventoray.projectmanager.di.test.DaggerTestComponent
-import com.ventoray.projectmanager.di.test.TestComponent
 import com.ventoray.projectmanager.ui.PreSignInActivity
-import com.ventoray.projectmanager.ui.util.ScrimController
-import com.ventoray.projectmanager.util.EventBusUtil
+import com.ventoray.projectmanager.ui.common.ScrimController
 import com.ventoray.projectmanager.api.VolleySingleton
 import com.ventoray.projectmanager.data.datamodel.Project
+import com.ventoray.projectmanager.data.datamodel.User
+import com.ventoray.projectmanager.data.repo.Resource
 import com.ventoray.projectmanager.data.repo.UserRepository
+import com.ventoray.projectmanager.di.ViewModelFactory
 import com.ventoray.projectmanager.ui.common.UserViewModel
 import dagger.android.AndroidInjection
 import dagger.android.AndroidInjector
@@ -56,15 +57,10 @@ import dagger.android.support.HasSupportFragmentInjector
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import javax.inject.Inject
 
 class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationView.OnNavigationItemSelectedListener {
-
-    //TODO replace this
-//    private var user: User? =
-//        User()
 
     private lateinit var emailTextView: TextView
     private lateinit var userNameTextView: TextView
@@ -86,8 +82,9 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
     @Inject lateinit var userRepository: UserRepository
     @Inject lateinit var dBUtil: DbUtil
     @Inject lateinit var androidFragInjector: DispatchingAndroidInjector<Fragment>
+
+    @Inject lateinit var viewModelFactory: ViewModelFactory
     @Inject lateinit var userViewModel: UserViewModel
-//    private val userViewModel by lazy { ViewModelProviders.of(this).get(UserViewModel::class.java) }
 
     override fun supportFragmentInjector(): AndroidInjector<Fragment> {
         return androidFragInjector
@@ -116,42 +113,29 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
         searchBar = findViewById(R.id.searchBar)
         scrim = findViewById(R.id.scrim)
 
-        scrim.setOnClickListener{view ->
-            scrim?.visibility = View.GONE
-            bottomSheet?.state = STATE_HIDDEN
+        scrim.setOnClickListener{ view ->
+            scrim.visibility = View.GONE
+            bottomSheet.state = STATE_HIDDEN
         }
 
         searchBar.setOnQueryTextListener(QueryTextListener())
 
-//        userViewModel.setTokenData(PreferenceUtilK.getClientPasswordToken(this))
-
-        var string = PreferenceUtilK.getClientPasswordToken(this)
+        userViewModel.setTokenData(PreferenceUtilK.getClientPasswordToken(this))
+        val string = PreferenceUtilK.getClientPasswordToken(this)
 
         string?.let {
-            val user: User? = userViewModel.getUser(string, 0)?.value?.data
-            Log.d("ProjectsActivity", "User retrieved: ${user?.username}")
+            val liveData: LiveData<Resource<User>>? = userViewModel.getUser(string)
+            liveData?.observe(this, Observer { user ->
+                if (user?.data != null) {
+                    userNameTextView.text = user.data.username
+                    emailTextView.text = user.data.email
+                }
+            })
         }
 
-
-//        val binding = DataBindingUtil.setContentView<ActivityProjectsBinding>(this, R.layout.activity_projects)
-//        val navBinding: NavHeaderMainBinding = DataBindingUtil
-//            .inflate(layoutInflater, R.layout.nav_header_main, binding.navView, false)
-////        binding.navView.addHeaderView(_binding.root)
-//        navBinding.user = userViewModel.user
-
-
-
         setUpBottomSheet()
-//        getUserData()
         setUpTabLayout()
-        tryComponent()
         testPusher()
-        setNavHeaderData()
-    }
-
-    private fun setNavHeaderData() {
-//        userNameTextView?.setText(userViewModel.user.value?.data?.username)
-//        emailTextView?.setText(userViewModel.user.value?.data?.email)
     }
 
 
@@ -181,12 +165,6 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
         pusher.connect();
     }
 
-    private fun tryComponent() {
-        var testComponent: TestComponent = DaggerTestComponent.builder().build()
-        val winner = testComponent.getTheWar().getWinner()
-        Log.d("Winterfell", "The winner is house $winner")
-    }
-
     private fun setUpBottomSheet() {
         bottomSheetView = findViewById(R.id.bottomSheetView)
         bottomSheet = BottomSheetBehavior.from(bottomSheetView).apply {
@@ -197,53 +175,15 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
         }
     }
 
-    class QueryTextListener: SearchView.OnQueryTextListener {
-        override fun onQueryTextSubmit(query: String?): Boolean {
-            EventBus.getDefault().post(EventBusUtil.SearchEvent(query))
-            if (query.isNullOrEmpty()) return false
-            return true
-        }
-
-        override fun onQueryTextChange(query: String?): Boolean {
-            EventBus.getDefault().post(EventBusUtil.SearchEvent(query))
-            if (query.isNullOrEmpty()) return false
-            return true
-        }
-    }
-
-    private fun setUpTabLayout(): Unit {
+    private fun setUpTabLayout() {
         projectsTabLayout = findViewById<TabLayout>(R.id.projectsTabLayout)
         projectsViewPager = findViewById<ViewPager>(R.id.projectsViewPager)
         projectsTabLayout.setupWithViewPager(projectsViewPager)
         projectsTabLayout.tabMode = TabLayout.MODE_FIXED
         projectsViewPager.adapter =
             ProjectsPageAdapter(supportFragmentManager, this)
-        //TODO viewPager.setPageTransformer
 
     }
-
-    /**
-     * Checks if user profile exists on file, if not, retrieve from API
-     */
-//    private fun getUserData() {
-//        val obj: Any? = FileManager.readObjectFromFile(applicationContext, USER_OBJECT_FILE)
-//
-//        user = obj as User?
-//
-//        //TODO this is unnecessary
-//        if (user == null || user?.id == 0) {
-//            getUserFromWeb { user ->
-//                user?.let {
-//                    //Begin download of projects
-////                    projectRepository.downLoadProjects(user.id)
-//                }
-//            }
-//        } else {
-//            setNavHeaderData()
-//        }
-//    }
-
-
 
     override fun onBackPressed() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -289,7 +229,7 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
 
             }
             R.id.nav_share -> {
-                setNavHeaderData()
+
             }
             R.id.logout -> {
                 logout()
@@ -301,8 +241,8 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
     }
 
 
+    //TODO remove this from Activity class
     private fun logout(): Unit {
-        //TODO remove user info e.g. database
         val token: String? = PreferenceUtilK.getClientPasswordToken(applicationContext)
         if (token == null || token.isEmpty()) {
             val intent: Intent = Intent()
@@ -349,40 +289,6 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
         }
         VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
     }
-
-//    private fun getUserFromWeb(onComplete: (User?)->Unit): Unit {
-//        val token: String? = PreferenceUtilK.getClientPasswordToken(applicationContext)
-//        if (token == null || token.isEmpty()) {
-//            val intent: Intent = Intent()
-//            intent.setClass(this, PreSignInActivity::class.java)
-//            startActivity(intent)
-//        }
-//
-//        val stringRequest = object : StringRequest(
-//            Request.Method.GET, APIv1.URL_USER,
-//            Response.Listener<String> { response ->
-//                response?.let {
-//                    Log.i("User", response)
-//                    user = Gson().fromJson(response, User::class.java)
-//                    FileManager.writeObjectToFile(this, user, USER_OBJECT_FILE)
-//
-//                    //TODO control flow for error
-//                    setNavHeaderData()
-//                    onComplete(user)
-//                }
-//            },
-//            Response.ErrorListener {
-//                it?.let { Log.e("RetreiveUser", it.message ?: "null message") }
-//                Toast.makeText(this, R.string.retrieve_user_failed, Toast.LENGTH_SHORT).show()
-//            }
-//        ) {
-//            override fun getHeaders(): MutableMap<String, String> {
-//                return HashMap<String, String>().apply { put(APIv1.HEADER_AUTHORIZATION, "Bearer $token") }
-//            }
-//        }
-//        VolleySingleton.getInstance(applicationContext).addToRequestQueue(stringRequest)
-//    }
-
 
 
     /**

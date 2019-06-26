@@ -17,7 +17,7 @@ class UserRepository @Inject constructor(
 ) {
 
 
-    fun getUser(token: String, id: Int): LiveData<Resource<User>> {
+    fun getUser(token: String): LiveData<Resource<User>> {
         return object : NetworkBoundResource<User, User>() {
             override fun onFetchFailed() {
                 super.onFetchFailed()
@@ -39,7 +39,7 @@ class UserRepository @Inject constructor(
 
             override fun loadFromDb(): LiveData<User> {
                 Log.d("UserRepo", "Loading from DB")
-                return userDao.getUser(id)
+                return userDao.getUser()
             }
 
             override fun createCall(): LiveData<User> {
