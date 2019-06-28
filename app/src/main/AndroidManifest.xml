@@ -21,11 +21,13 @@
         <activity
                 android:name=".ui.projects.ProjectsActivity"
                 android:label="@string/title_activity_main"
+                android:launchMode="singleTop"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
                 android:name=".ui.PreSignInActivity"
                 android:label="@string/app_name_readable"
+                android:launchMode="singleTop"
                 android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

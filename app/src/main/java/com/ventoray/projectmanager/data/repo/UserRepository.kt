@@ -19,13 +19,6 @@ class UserRepository @Inject constructor(
 
     fun getUser(token: String): LiveData<Resource<User>> {
         return object : NetworkBoundResource<User, User>() {
-            override fun onFetchFailed() {
-                super.onFetchFailed()
-            }
-
-            override fun processResponse(response: User): User {
-                return super.processResponse(response)
-            }
 
             override fun saveCallResult(item: User) {
                 Log.d("UserRepo", "saving call result $item")

@@ -102,12 +102,14 @@ abstract class NetworkBoundResource<ResultType, RequestType>
 
             //not a good idea, may not just be null or not null outcomes
             if (response != null) {
-
                 scope.launch(Dispatchers.IO) {
                     saveCallResult(processResponse(response))
                 }
 
                 scope.launch(Dispatchers.Main) {
+                    // we specially request a new live data,
+                    // otherwise we will get immediately last cached value,
+                    // which may not be updated with latest results received from network.
                     result.addSource(loadFromDb()) { newData ->
                         setValue(Resource.success(newData))
                     }

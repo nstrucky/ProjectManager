@@ -47,9 +47,6 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
 
     fun searchActiveProjects(query: String, userId: Int, token: String): LiveData<Resource<List<Project>>> {
         return object : NetworkBoundResource<List<Project>, List<Project>> () {
-            override fun onFetchFailed() {
-                super.onFetchFailed()
-            }
 
             override fun saveCallResult(item: List<Project>) {
                 projectDao.insertAll(item)
@@ -69,9 +66,6 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
 
     fun searchCompletedProjects(query: String, userId: Int, token: String): LiveData<Resource<List<Project>>> {
         return object : NetworkBoundResource<List<Project>, List<Project>> () {
-            override fun onFetchFailed() {
-                super.onFetchFailed()
-            }
 
             override fun saveCallResult(item: List<Project>) {
                 projectDao.insertAll(item)
@@ -90,9 +84,6 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
 
     fun loadActiveProjects(userId: Int, token: String): LiveData<Resource<List<Project>>> {
         return object : NetworkBoundResource<List<Project>, List<Project>> () {
-            override fun onFetchFailed() {
-                super.onFetchFailed()
-            }
 
             override fun saveCallResult(item: List<Project>) {
                 projectDao.insertAll(item)
@@ -112,9 +103,6 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
 
     fun loadCompletedProjects(userId: Int, token: String): LiveData<Resource<List<Project>>> {
         return object : NetworkBoundResource<List<Project>, List<Project>> () {
-            override fun onFetchFailed() {
-                super.onFetchFailed()
-            }
 
             override fun saveCallResult(item: List<Project>) {
                 projectDao.insertAll(item)

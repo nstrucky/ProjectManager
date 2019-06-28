@@ -190,7 +190,7 @@ class ProjectsActivity : BaseActivity(), HasSupportFragmentInjector, NavigationV
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
         } else {
-            super.onBackPressed()
+            finishAffinity()
         }
     }
 
