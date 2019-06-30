@@ -11,38 +11,30 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UserRepository @Inject constructor(
-    private val userDao: UserDao,
-    private val webService: WebService
-) {
-
+class UserRepository @Inject constructor(private val userDao: UserDao,
+                                         private val webService: WebService) {
 
     fun getUser(token: String): LiveData<Resource<User>> {
         return object : NetworkBoundResource<User, User>() {
 
             override fun saveCallResult(item: User) {
-                Log.d("UserRepo", "saving call result $item")
                 userDao.insert(item)
             }
 
             override fun shouldFetch(data: User?): Boolean {
-                Log.d("UserRepo", "Should Fetch")
-                return true
+                return data == null
             }
 
             override fun loadFromDb(): LiveData<User> {
-                Log.d("UserRepo", "Loading from DB")
                 return userDao.getUser()
             }
 
             override fun createCall(): LiveData<User> {
                 val user = webService.getUser("Bearer $token")
-                Log.d("UserRepo", user.toString())
                 return  user
             }
         }.asLiveData()
     }
-
 
     /**
      * removes user from database

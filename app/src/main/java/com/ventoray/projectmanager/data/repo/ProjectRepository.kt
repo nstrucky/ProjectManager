@@ -13,10 +13,6 @@ import javax.inject.Singleton
 class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
                                             private val webService: WebService) {
 
-
-//    private val activeProjects: LiveData<List<Project>> = projectDao.getAllActiveProjects()
-//    private val completedProjects: LiveData<List<Project>> = projectDao.getAllCompletedProjects()
-
     /**
      * WorkerThread annotation indicates method needs to be called from a non-UI thread.
      * Suspend modifier tells compiler that this needs to be called from a coroutine
@@ -90,7 +86,7 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
             }
 
             override fun shouldFetch(data: List<Project>?): Boolean {
-                Log.d("ProjectRepo", "Should Fetch " + data.isNullOrEmpty().toString())
+                Log.d("ProjectRepo", "Should Fetch active " + data.isNullOrEmpty().toString())
                return data.isNullOrEmpty()
             }
 
@@ -109,7 +105,7 @@ class ProjectRepository @Inject constructor(private val projectDao: ProjectDao,
             }
 
             override fun shouldFetch(data: List<Project>?): Boolean {
-                Log.d("ProjectRepo", "Should Fetch " + data.isNullOrEmpty().toString())
+                Log.d("ProjectRepo", "Should Fetch completed " + data.isNullOrEmpty().toString())
                 return data.isNullOrEmpty()
             }
 

@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import com.ventoray.projectmanager.di.ViewModelFactory
 import com.ventoray.projectmanager.ui.util.getViewModel
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import dagger.android.support.AndroidSupportInjection
+import kotlinx.android.synthetic.main.fragment_projects.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -46,6 +48,9 @@ class ProjectListFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         FRAGMENT_TYPE = arguments?.getInt(KEY_FRAGMENT_TYPE, 0)
+
+
+
     }
 
 
@@ -73,10 +78,11 @@ class ProjectListFragment : Fragment() {
     }
 
     private fun setUpListAdapter() {
-        adapter = ProjectListAdapter()
+        adapter = ProjectListAdapter(context)
         viewDataBinding.recyclerview.adapter = adapter
         viewDataBinding.recyclerview.layoutManager = LinearLayoutManager(context)
 
+        
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -131,6 +137,7 @@ class ProjectListFragment : Fragment() {
                     adapter.setProjects(emptyList())
                 } else {
                     adapter.setProjects(projects.data)
+
                 }
 
             }

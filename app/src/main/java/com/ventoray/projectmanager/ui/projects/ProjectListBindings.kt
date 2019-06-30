@@ -1,12 +1,19 @@
 package com.ventoray.projectmanager.com.ventoray.projectmanager.ui.projects
 
+import android.content.Context
+import android.content.Intent
 import android.databinding.BindingAdapter
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.ImageView
 import android.widget.TextView
+import com.ventoray.projectmanager.data.datamodel.Project
 import com.ventoray.projectmanager.data.util.DbUtil
+import com.ventoray.projectmanager.ui.project.ProjectActivity
+import com.ventoray.projectmanager.ui.project.ProjectActivity.Companion.PROJECT_ID_KEY
+import com.ventoray.projectmanager.ui.project.ProjectActivity.Companion.PROJECT_NAME_KEY
 
 object ProjectListBindings {
 
@@ -75,6 +82,32 @@ object ProjectListBindings {
             imageView.visibility = VISIBLE
         } else {
             imageView.visibility = GONE
+        }
+    }
+
+
+    /**
+     * Right now this method only handles clicks from the individual list items
+     * in order to transition to a single ProjectActivity
+     * @param context - the Activity containing the list (ProjectsActivity)
+     */
+    class ProjectListClickHandler(private val context: Context?) {
+
+        fun onClickProject(view: View, project: Project) {
+            val name = project.name
+            val id = project.id
+            Log.d("Handler", "Project name: $name")
+
+            if (context != null) {
+                val intent = Intent().apply {
+                    putExtra(PROJECT_ID_KEY, id)
+                    putExtra(PROJECT_NAME_KEY, name)
+                    setClass(context, ProjectActivity::class.java)
+                }
+                context.startActivity(intent)
+            } else {
+                Log.e("ProjectBinding", "Context not provided to handler in order to start activity")
+            }
         }
     }
 

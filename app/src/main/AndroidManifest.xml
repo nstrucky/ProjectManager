@@ -16,6 +16,12 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
+        <activity android:name=".ui.project.ProjectActivity"
+            android:parentActivityName=".ui.projects.ProjectsActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.projects.ProjectsActivity"/>
+        </activity>
         <activity android:name=".BaseActivity">
         </activity>
         <activity

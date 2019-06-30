@@ -3,15 +3,12 @@ package com.ventoray.projectmanager.ui.projects
 import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View.GONE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
-import com.ventoray.projectmanager.R
+import com.ventoray.projectmanager.com.ventoray.projectmanager.ui.projects.ProjectListBindings
 import com.ventoray.projectmanager.data.datamodel.Project
-import com.ventoray.projectmanager.data.util.DbUtil
 import com.ventoray.projectmanager.databinding.RecyclerviewProjectItemBinding
 
-class ProjectListAdapter internal constructor(): RecyclerView.Adapter<ProjectListAdapter.ProjectViewHolder>() {
+class ProjectListAdapter internal constructor(private val context: Context?): RecyclerView.Adapter<ProjectListAdapter.ProjectViewHolder>() {
 
     private var projects = emptyList<Project>() // Cached copy of projects
 
@@ -21,6 +18,7 @@ class ProjectListAdapter internal constructor(): RecyclerView.Adapter<ProjectLis
         fun bind(project: Project) {
             with(itemBinding) {
                 this.project = project
+                this.handlers = ProjectListBindings.ProjectListClickHandler(context)
                 executePendingBindings()
             }
         }
