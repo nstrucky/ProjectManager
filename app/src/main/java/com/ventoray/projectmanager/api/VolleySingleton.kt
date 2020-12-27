@@ -8,7 +8,7 @@ import com.android.volley.toolbox.Volley
 /**
  * Singleton implementation as prescribed by Android framework:
  *   https://developer.android.com/training/volley/requestQueue
- *   
+ *
  * @param context: this should be an ApplicationContext, not Activity Context
  */
 class VolleySingleton constructor(context: Context) {
