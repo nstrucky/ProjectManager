@@ -17,7 +17,6 @@ object PreferenceUtilK {
 
     }
 
-
     private const val KEY_CLIENT_PASSWORD_TOKEN = "client_password_token"
 
     fun putClientPasswordToken(context: Context, token: String) {
@@ -64,5 +63,15 @@ object PreferenceUtilK {
 
     fun getUserSignedIn(context: Context): Boolean {
         return getSharedPreferences(context).getBoolean(KEY_USER_SIGNED_IN, false)
+    }
+
+    private const val KEY_USER_ID = "user_id_in_pref"
+
+    fun getUserId(context: Context): Int {
+        return getSharedPreferences(context).getInt(KEY_USER_ID, 0)
+    }
+
+    fun setUserId(context: Context, userId: Int) {
+        getSharedPreferences(context).edit().putInt(KEY_USER_ID, userId).apply()
     }
 }

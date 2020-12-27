@@ -2,6 +2,7 @@ package com.ventoray.projectmanager.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.preference.Preference
 import android.util.Log
 import android.widget.Toast
 import com.android.volley.Request
@@ -14,6 +15,8 @@ import com.ventoray.projectmanager.util.MessageUtil.makeToast
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import com.ventoray.projectmanager.api.APIv1
 import com.ventoray.projectmanager.api.VolleySingleton
+import org.json.JSONArray
+import org.json.JSONObject
 
 class PreSignInActivity : BaseActivity() {
 
@@ -57,13 +60,16 @@ class PreSignInActivity : BaseActivity() {
      * If the token is active then the user can sign in...not the best method, but trying it out.
      */
     private fun checkSignIn(token: String) : Unit {
+        //Check sign in and get the user's ID for use later
         val stringRequest = object : StringRequest(
             Request.Method.GET, APIv1.URL_TEST,
             Response.Listener<String> { response ->
-                response?.let { Log.i("SignInActivity", response) }
+                    response?.let { Log.i("SignInActivity", "Server Response: " + response)
+                }
 
                 //User successfully verified, set logged in
                 PreferenceUtilK.setUserSignedIn(this)
+                PreferenceUtilK.setUserId(this, JSONObject(response).getInt(APIv1.PARAM_USER_ID))
 
                 //Determine if it's the first signin
                 if (PreferenceUtilK.getFirstTimeAppOpened(this)) {

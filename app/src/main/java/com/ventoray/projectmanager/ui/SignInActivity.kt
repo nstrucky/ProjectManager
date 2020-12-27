@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.*
@@ -15,6 +16,7 @@ import com.ventoray.projectmanager.api.APIv1
 import com.ventoray.projectmanager.api.VolleySingleton
 
 import kotlinx.android.synthetic.main.activity_sign_in.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import org.json.JSONObject
 import java.nio.charset.Charset
 
@@ -47,14 +49,12 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
     //TODO Replace this whole flow with retrofit2, NetworkBoundResource, and Repository
     private fun signIn(): Unit {
 
-        val username: String = inputUsername.text.toString()
-        val password: String = inputPassword.text.toString()
         val clientId: String = BuildConfig.TEST_CLIENT_ID
         val clientSecret: String = BuildConfig.TEST_API_SECRET
         val volley: VolleySingleton = VolleySingleton.getInstance(applicationContext)
         val requestJson: JSONObject = JSONObject().apply {
-            put(APIv1.PARAM_USERNAME, "nickstruckmeyer@gmail.com")
-            put(APIv1.PARAM_PASSWORD, "loomis123")
+            put(APIv1.PARAM_USERNAME, inputUsername.text)
+            put(APIv1.PARAM_PASSWORD, inputPassword.text)
             put(APIv1.PARAM_CLIENT_ID, clientId)
             put(APIv1.PARAM_CLIENT_SECRET, clientSecret)
             put(APIv1.PARAM_GRANT_TYPE, APIv1.VALUE_GRANT_TYPE)
@@ -66,8 +66,9 @@ class SignInActivity : AppCompatActivity(), View.OnClickListener {
             Request.Method.POST,
             APIv1.URL_TOKEN_REQUEST,
             Response.Listener<String> { response ->
-                Log.d("SignInActivity", response)
+                Log.d("SignIn response", response)
                 val jsonObject: JSONObject = JSONObject(response)
+//                val userId: Int = jsonObject.optInt()
                 val token: String = jsonObject.optString(APIv1.RESPONSE_KEY_ACCESS_TOKEN)
                 PreferenceUtilK.putClientPasswordToken(applicationContext, token)
                 Log.d("TOKEN", token)

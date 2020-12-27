@@ -6,7 +6,6 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +18,6 @@ import com.ventoray.projectmanager.di.ViewModelFactory
 import com.ventoray.projectmanager.ui.util.getViewModel
 import com.ventoray.projectmanager.util.PreferenceUtilK
 import dagger.android.support.AndroidSupportInjection
-import kotlinx.android.synthetic.main.fragment_projects.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -49,10 +47,7 @@ class ProjectListFragment : Fragment() {
         super.onCreate(savedInstanceState)
         FRAGMENT_TYPE = arguments?.getInt(KEY_FRAGMENT_TYPE, 0)
 
-
-
     }
-
 
     override fun onAttach(context: Context?) {
         AndroidSupportInjection.inject(this)
@@ -88,7 +83,7 @@ class ProjectListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         var token = PreferenceUtilK.getClientPasswordToken(this.requireContext())
         if (token.isNullOrEmpty()) token = ""
-        userLogin = UserLogin(token, 2)//TODO change to signed in user
+        userLogin = UserLogin(token, PreferenceUtilK.getUserId(requireContext()))//TODO change to signed in user
 
         /**
          *  This may not be the best solution right now because the WebService will be called for both fragments
@@ -139,7 +134,6 @@ class ProjectListFragment : Fragment() {
                     adapter.setProjects(projects.data)
 
                 }
-
             }
         })
     }

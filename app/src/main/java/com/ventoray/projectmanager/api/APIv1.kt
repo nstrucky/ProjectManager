@@ -42,6 +42,7 @@ class APIv1 {
         const val PARAM_CLIENT_ID: String = "client_id"
         const val PARAM_CLIENT_SECRET: String = "client_secret"
         const val PARAM_GRANT_TYPE: String = "grant_type"
+        const val PARAM_USER_ID: String = "user_id"
 
         /**
          * Values that will be constant
