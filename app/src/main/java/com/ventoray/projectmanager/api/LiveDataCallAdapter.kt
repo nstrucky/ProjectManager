@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  *
  * This was taken from the GithubBrowserSample project
  * @param <R>
-</R> */
+ */
 class LiveDataCallAdapter<R>(private val responseType: Type) :
     CallAdapter<R, LiveData<R>> {
 
